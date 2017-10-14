@@ -51,6 +51,7 @@ class DubinsPathLength(CostFunction):
   def __init__(self, turning_radius=None):
       assert turning_radius is not None, "Please enter turning radius parameter"
       self.turning_radius = turning_radius
+      super(DubinsPathLength, self).__init__()
 
   def get_cost(self, edge):
     assert len(edge[0]) == 3, "state must be of form (x,y,heading)"
@@ -59,3 +60,13 @@ class DubinsPathLength(CostFunction):
     s2 = (edge[-1][0], edge[-1][1], angles.normalize_angle_positive(edge[-1][2]))
     
     return dubins.path_length(s1, s2, self.turning_radius)
+
+class UnitCost(CostFunction):
+  """Penalizes every expansion.
+     To be used to calculate number of expansions till goal found"""
+  def __init__(self):
+    super(UnitCost, self).__init__()
+
+  def get_cost(self, edge):
+    cost = 1
+    return cost

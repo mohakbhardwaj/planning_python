@@ -16,11 +16,11 @@ class BackwardAstar(Planner):
   def plan(self, max_expansions = 100000):
     assert self.initialized == True, "Planner has not been initialized properly. Please call initialize or reset_problem function before plan function"
     frontier = PriorityQueue()  #Initialize open list
-    visited = defaultdict(lambda: np.inf)    #Initialized closed(visited) set
+    visited = dict()   #Initialized closed(visited) set
     c_obs = []                  #Initialize Cobs list
     
     came_from = {}              #Keep track of edges a node came from
-    cost_so_far = defaultdict(lambda: np.inf)            #Keep track of cost of shortest path from start to each node visited so far
+    cost_so_far = dict()           #Keep track of cost of shortest path from start to each node visited so far
     
     came_from[self.goal_node]= (None, None)
     cost_so_far[self.goal_node] = 0.
@@ -69,7 +69,7 @@ class BackwardAstar(Planner):
       for i, neighbor in enumerate(neighbors):
         new_g = g + edge_costs[i]
         if neighbor not in visited:
-          if new_g < cost_so_far[neighbor]:
+          if neighbor not in cost_so_far or new_g < cost_so_far[neighbor]:
             came_from[neighbor] = (curr_node, valid_edges[i])
             cost_so_far[neighbor] = new_g
             h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.start_node, came_from, cost_so_far, list(visited), c_obs)

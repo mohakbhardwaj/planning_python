@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import time
 from planning_python.environment_interface.env_2d import Env2D
 from planning_python.state_lattices.common_lattice.xy_analytic_lattice import XYAnalyticLattice
-from planning_python.cost_functions.cost_function import PathLengthNoAng
+from planning_python.cost_functions.cost_function import PathLengthNoAng, UnitCost
 from planning_python.heuristic_functions.heuristic_function import EuclideanHeuristicNoAng, ManhattanHeuristicNoAng
 from planning_python.data_structures.planning_problem import PlanningProblem
 from planning_python.planners.astar import Astar
@@ -42,11 +42,11 @@ cost_fn = PathLengthNoAng()                   #Penalize length of path
 heuristic_fn = EuclideanHeuristicNoAng()      
 
 #Step 4: Create a planning problem
-prob_params = {'heuristic_weight': 1}        #Planner is not greedy at all
+prob_params = {'heuristic_weight': 0}        #Planner is not greedy at all
 start_n = l.state_to_node((0,0))
 goal_n = l.state_to_node((200, 200))
 prob = PlanningProblem(prob_params)
-prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=True)
+prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=False)
 
 #Step 5: Create Planner object and ask it to solve the planning problem
 planner = Astar()

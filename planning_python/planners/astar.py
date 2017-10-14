@@ -16,15 +16,15 @@ class Astar(Planner):
   def plan(self, max_expansions = 100000):
     assert self.initialized == True, "Planner has not been initialized properly. Please call initialize or reset_problem function before plan function"
     frontier = PriorityQueue()  #Initialize open list
-    visited = defaultdict(lambda: np.inf)    #Initialized closed(visited) set
+    visited = dict()    #Initialized closed(visited) set
     c_obs = []                  #Initialize Cobs list
     
     came_from = {}              #Keep track of edges a node came from
-    cost_so_far = defaultdict(lambda: np.inf)            #Keep track of cost of shortest path from start to each node visited so far
+    cost_so_far = dict()            #Keep track of cost of shortest path from start to each node visited so far
     came_from[self.start_node]= (None, None)
     cost_so_far[self.start_node] = 0.
-    start_h_val = self.get_heuristic(self.start_node, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
-    frontier.put(self.start_node, 0 + self.heuristic_weight*start_h_val, self.heuristic_weight*start_h_val)
+    # start_h_val = self.get_heuristic(self.start_node, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
+    frontier.put(self.start_node, 0)# + self.heuristic_weight*start_h_val)#, self.heuristic_weight*start_h_val)
 
     curr_expansions = 0         #Number of expansions done
     num_rexpansions =0
@@ -66,12 +66,12 @@ class Astar(Planner):
       for i, neighbor in enumerate(neighbors):
         new_g = g + edge_costs[i]
         if neighbor not in visited:
-          if new_g < cost_so_far[neighbor]:
+          if neighbor not in cost_so_far or new_g < cost_so_far[neighbor]:
             came_from[neighbor] = (curr_node, valid_edges[i])
             cost_so_far[neighbor] = new_g
-            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
-            f_val = new_g + h_val
-            frontier.put(neighbor, f_val, h_val)
+            # h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
+            f_val = new_g # + h_val
+            frontier.put(neighbor, f_val)#, h_val)
       
       #Step 5:increment number of expansions
       curr_expansions += 1

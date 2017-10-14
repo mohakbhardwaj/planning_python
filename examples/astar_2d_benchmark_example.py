@@ -80,7 +80,7 @@ def run_benchmark(database_folders=[], num_envs=1):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument('-database_folders', nargs='+', required=True)
+  parser.add_argument('--database_folders', nargs='+', required=True)
   parser.add_argument('--num_envs', type=int)
   args = parser.parse_args()
   #Run the benchmark and save results
