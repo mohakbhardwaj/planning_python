@@ -17,7 +17,6 @@ class XYAnalyticLattice(StateLattice):
     self.path_resolution = params['path_resolution']
     
 
-    StateLattice.__init__(self, self.ndims, [self.x_lims[0], self.y_lims[0]], [self.x_lims[1], self.y_lims[1]], self.resolution)
     
     #Define grid connectivity. This describes what nodes in the discrete
     #graph are connected to what other nodes.
@@ -29,6 +28,17 @@ class XYAnalyticLattice(StateLattice):
       self.max_movement_id = 8
       self.children = np.array([(1, 1), (1,-1), (-1, -1), (-1, 1), (1, 0), (0, -1),  (-1, 0), (0, 1)])
       self.predecessors = self.children
+    
+    StateLattice.__init__(self, self.ndims, [self.x_lims[0], self.y_lims[0]], [self.x_lims[1], self.y_lims[1]], self.resolution)
+
+    #Precalculate successors and predecessors
+    self.node_to_succs = dict()
+    self.node_to_preds = dict()
+    self.succ_costs = dict()
+    self.pred_costs = dict()
+    self.edge_precalc_done = False
+    self.costs_precalc_done = False
+    
 
   def node_to_state(self, node):
     """Convert a discrete node to a world state taking origin and rotation of lattice into account
@@ -138,4 +148,46 @@ class XYAnalyticLattice(StateLattice):
   def distance_bw_states(self, s1, s2):
     return np.linalg.norm(s1-s2)
 
+  def enumerate_lattice(self):
+    """For every discrete node in the lattice, we store a dictionary of [successor nodes, successor edges] and 
+    [predecessor_node, predecessor_edges]"""
+    node_to_succs = dict()
+    node_to_preds = dict()
+    start_node = self.state_to_node([self.x_lims[0], self.y_lims[0]])
+    
+    for i in range(self.num_cells[0]):
+      x = start_node[0] + i
+      for j in range(self.num_cells[1]):
+        y = start_node[1] + j
+        node = (x,y)
+        node_to_succs[node] = self.get_successors(node)
+        node_to_preds[node] = self.get_predecessors(node)
+    
+    assert(len(node_to_succs.keys()) == self.total_cells), "Did not enumerate all possible successor cells"
+    assert(len(node_to_preds.keys()) == self.total_cells), "Did not enumerate all possible predecessor cells"
+    return node_to_succs, node_to_preds
+
   
+  def precalc_edges(self):
+    self.node_to_succs, self.node_to_preds = self.enumerate_lattice()
+    self.edge_precalc_done = True
+
+  def precalc_costs(self, cost_fn):
+    #Do precalculation of costs here
+    print('Precalculating Edges and Costs')
+    if not self.edge_precalc_done:
+      self.precalc_edges()
+    for node in self.node_to_succs:
+      succs = self.node_to_succs[node]
+      costs = []
+      for succ_node, succ_edge in succs:
+        costs.append(cost_fn.get_cost(succ_edge))
+      self.succ_costs[node] = costs
+      
+      preds = self.node_to_preds[node]
+      costs = []
+      for pred_node, pred_edge in preds:
+        costs.append(cost_fn.get_cost(pred_edge))
+      self.pred_costs[node] = costs
+
+    self.costs_precalc_done = True  

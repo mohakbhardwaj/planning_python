@@ -60,7 +60,7 @@ class Env2D():
     @return 1 - in limits
           0 - not in limits
     """
-    return self.x_lims[0] <= state[0] <= self.x_lims[1] and self.y_lims[0] <= state[1] <= self.y_lims[1]
+    return self.x_lims[0] <= state[0] < self.x_lims[1] and self.y_lims[0] <= state[1] < self.y_lims[1]
 
   def is_state_valid(self, state):
     """Checks if state is valid.

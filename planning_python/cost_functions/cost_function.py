@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from math import sqrt
 import numpy as np
 import dubins
 
@@ -27,9 +28,11 @@ class PathLengthNoAng(CostFunction):
     super(PathLengthNoAng, self).__init__()
 
   def get_cost(self, edge):
-    n = len(edge)
+    # n = len(edge)
     cost = 0
-    cost += np.linalg.norm(np.asarray(edge[n-1]) - np.asarray(edge[0]))
+    s1 = edge[0]
+    s2 = edge[-1]
+    cost += np.linalg.norm(np.asarray(s2) - np.asarray(s1))
     return cost
 
 class PathLengthAng(CostFunction):

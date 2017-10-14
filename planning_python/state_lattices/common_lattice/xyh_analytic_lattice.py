@@ -72,7 +72,13 @@ class XYHAnalyticLattice(StateLattice):
       raise NotImplementedError; #least priority right now
 
     StateLattice.__init__(self, self.ndims, [self.x_lims[0], self.y_lims[0], 0], [self.x_lims[1], self.y_lims[1], 2.0*np.pi], self.resolution)
-
+    #Precalculate successors and predecessors
+    self.node_to_succs = dict()
+    self.node_to_preds = dict()
+    self.succ_costs = dict()
+    self.pred_costs = dict()
+    self.edge_precalc_done = False
+    self.costs_precalc_done = False
 
   def node_to_state(self, node):
     """Convert a discrete node to a world state taking origin and rotation of lattice into account

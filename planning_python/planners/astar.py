@@ -23,8 +23,9 @@ class Astar(Planner):
     cost_so_far = dict()            #Keep track of cost of shortest path from start to each node visited so far
     came_from[self.start_node]= (None, None)
     cost_so_far[self.start_node] = 0.
-    # start_h_val = self.get_heuristic(self.start_node, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
-    frontier.put(self.start_node, 0)# + self.heuristic_weight*start_h_val)#, self.heuristic_weight*start_h_val)
+    start_h_val = self.heuristic_weight*self.get_heuristic(self.start_node, self.goal_node)
+    # start_h_val = 0
+    frontier.put(self.start_node, 0 + start_h_val, start_h_val)
 
     curr_expansions = 0         #Number of expansions done
     num_rexpansions =0
@@ -45,7 +46,6 @@ class Astar(Planner):
       
       #Step 1: Pop the best node from the frontier
       f, h, curr_node = frontier.get()
-      
       if curr_node in visited:
         continue
       #Step 2: Add to visited
@@ -69,9 +69,10 @@ class Astar(Planner):
           if neighbor not in cost_so_far or new_g < cost_so_far[neighbor]:
             came_from[neighbor] = (curr_node, valid_edges[i])
             cost_so_far[neighbor] = new_g
-            # h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node, came_from, cost_so_far, list(visited), c_obs)
-            f_val = new_g # + h_val
-            frontier.put(neighbor, f_val)#, h_val)
+            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node)
+            # h_val = 0
+            f_val = new_g + h_val
+            frontier.put(neighbor, f_val, h_val)
       
       #Step 5:increment number of expansions
       curr_expansions += 1

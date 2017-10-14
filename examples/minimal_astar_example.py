@@ -19,41 +19,55 @@ from planning_python.data_structures.planning_problem import PlanningProblem
 from planning_python.planners.astar import Astar
 import os
 
-#Step 1: Load environment from file 
+
+#Step1: Set some problem parameters
+x_lims = [0, 200] # low(inclusive), upper(exclusive) extents of world in x-axis
+y_lime = [0, 200] # low(inclusive), upper(exclusive) extents of world in y-axis
+
+start = (0, 0)   #start state(world coordinates)
+goal = (199,199) #goal state(world coordinates)
+
+visualize = False
+
+#Step 2: Load environment from file 
 envfile = os.path.abspath("../../motion_planning_datasets/single_bugtrap/train/1.png")
 env_params = {'x_lims': [0, 200], 'y_lims': [0, 200]}
 e = Env2D()
 e.initialize(envfile, env_params)
 
-#Step 2: Create lattice to overlay on environment
+#Step 3: Create lattice to overlay on environment
 lattice_params = dict()
-lattice_params['x_lims']          = [0, 200] # Used to calculate number of cells in lattice (should ideally be consistent with env_params['x_lims'])
-lattice_params['y_lims']          = [0, 200] # Used to calculate number of cells in lattice (should ideally be consistent with env_params['y_lims'])
-lattice_params['resolution']      = [1, 1]   # Used to calculate number of cells in lattice + conversion from discrete to continuous space and vice-versa
-lattice_params['origin']          = (0, 0)   # Used for conversion from discrete to continuous and vice-versa. 
-lattice_params['rotation']        = 0        # Used for conversion from discrete to continuous and vice-versa (This plus origin define lattice-->world transform)
+lattice_params['x_lims']          = [0, 200] # Usefule to calculate number of cells in lattice 
+lattice_params['y_lims']          = [0, 200] # Useful to calculate number of cells in lattice
+lattice_params['resolution']      = [1, 1]   # Useful to calculate number of cells in lattice + conversion from discrete to continuous space and vice-versa
+lattice_params['origin']          = start    # Used for conversion from discrete to continuous and vice-versa. 
+lattice_params['rotation']        = 0        # Can rotate lattice with respect to world
 lattice_params['connectivity']    = 'eight_connected' #Lattice connectivity (can be four or eight connected for xylattice)
-lattice_params['path_resolution'] = 1      #Resolution for defining edges and doing collision checking (in meters)
+lattice_params['path_resolution'] = 1         #Resolution for defining edges and doing collision checking (in meters)
 
 l = XYAnalyticLattice(lattice_params)
 
-#Step 3: Create cost and heuristic objects
-cost_fn = PathLengthNoAng()                   #Penalize length of path
+#Step 4: Create cost and heuristic objects
+cost_fn = PathLengthNoAng()                        #Penalize length of path
 heuristic_fn = EuclideanHeuristicNoAng()      
 
-#Step 4: Create a planning problem
-prob_params = {'heuristic_weight': 0}        #Planner is not greedy at all
-start_n = l.state_to_node((0,0))
-goal_n = l.state_to_node((200, 200))
-prob = PlanningProblem(prob_params)
-prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=False)
+#(Additionally, you can precalculate edges and costs on lattice for speed-ups)
+l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
 
-#Step 5: Create Planner object and ask it to solve the planning problem
+#Step 5: Create a planning problem
+prob_params = {'heuristic_weight': 1.0}        
+start_n = l.state_to_node(start)
+goal_n = l.state_to_node(goal)
+prob = PlanningProblem(prob_params)
+prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=visualize)
+
+#Step 6: Create Planner object and ask it to solve the planning problem
 planner = Astar()
 planner.initialize(prob)
 plan_start_time = time.time()
 path, path_cost, num_expansions, came_from, cost_so_far, c_obs = planner.plan()
 planning_time = time.time() - plan_start_time
+
 print('Path: ', path)
 print('Path Cost: ', path_cost)
 print('Number of Expansions: ', num_expansions)

@@ -35,24 +35,31 @@ class Planner(object):
               valid_edges   - list of collision free edges(continuous coords) coming out of the input node
               invalid_edges - a list of tuples where each tuple is of following form: (invalid edge, first invalid state along edge)
     """
-    succs = self.lattice.get_successors(node)
+    if self.lattice.edge_precalc_done:
+      succs = self.lattice.node_to_succs[node]
+    else:  
+      succs = self.lattice.get_successors(node)
     neighbors = []     #Discrete nodes that are valid neighbors of current node
     costs = []         #Cost associated with each of the neighbors
     valid_edges =[]    #Valid edges coming out of the node
     invalid_edges = [] #Continuous states that are first states in collision along an edge
     
-    for succ in succs:
+    for i,succ in enumerate(succs):
       succ_node = succ[0]
       succ_edge = succ[1]
       isvalid, first_coll_state = self.env.is_edge_valid(succ_edge)
       if not isvalid:
-        # print(succ_node)  
         invalid_edges.append((succ_edge, first_coll_state))
         continue
-
       neighbors.append(succ_node)
       valid_edges.append(succ_edge)
-      costs.append(self.cost.get_cost(succ_edge))
+
+      #If precalculated costs available, use them else calculate them
+      if self.lattice.costs_precalc_done:
+        costs.append(self.lattice.succ_costs[node][i])
+      else:
+        costs.append(self.cost.get_cost(succ_edge))
+    #Visualize exansion if required
     if self.visualize:
       self.visualize_search(valid_edges, invalid_edges)
       
@@ -68,13 +75,17 @@ class Planner(object):
               valid_edges   - list of collision free edges(continuous coords) coming out of the input node
               invalid_edges - a list of tuples where each tuple is of following form: (invalid edge, first invalid state along edge)
     """
-    preds = self.lattice.get_predecessors(node)
+    if self.lattice.edge_precalc_done:
+      preds = self.lattice.node_to_preds[node]
+    else:  
+      preds = self.lattice.get_predecessors(node)
+    
     neighbors = []     #Discrete nodes that are valid neighbors of current node
     costs = []         #Cost associated with each of the neighbors
     valid_edges =[]    #Valid edges coming out of the node
     invalid_edges = [] #Continuous states that are first states in collision along an edge
     
-    for pred in preds:
+    for i, pred in enumerate(preds):
       pred_node = pred[0]
       pred_edge = pred[1]
       isvalid, first_coll_state = self.env.is_edge_valid(pred_edge)
@@ -83,7 +94,10 @@ class Planner(object):
         continue
       neighbors.append(pred_node)
       valid_edges.append(pred_edge)
-      costs.append(self.cost.get_cost(pred_edge))
+      if self.lattice.costs_precalc_done:
+        costs.append(self.lattice.pred_costs[node][i])
+      else:
+        costs.append(self.cost.get_cost(pred_edge))
     if self.visualize:
       self.visualize_search(valid_edges, invalid_edges)
       
@@ -116,14 +130,14 @@ class Planner(object):
       # plt.pause(1)
     return path, path_cost
 
-  def get_heuristic(self, node_1, node_2, came_from={}, cost_so_far={}, closed=[], c_obs=[]):
+  def get_heuristic(self, node_1, node_2):
     if self.heuristic == None:
       return 0
     s_1 = self.lattice.node_to_state(node_1)
     s_2 = self.lattice.node_to_state(node_2)
-    h_val = self.heuristic.get_heuristic(s_1, s_2, came_from, cost_so_far, closed, c_obs)
+    h_val = self.heuristic.get_heuristic(s_1, s_2)
     return h_val
-
+    
   def visualize_search(self, valid_edges, invalid_edges):
     self.env.plot_edges(valid_edges, 'solid', 'blue', 2)
     [self.env.plot_edge(e[0], 'solid', 'green', 2) for e in invalid_edges]

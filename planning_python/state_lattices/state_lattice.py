@@ -17,7 +17,7 @@ class StateLattice():
     self.num_cells = [int(np.ceil((upper_limits[idx] - lower_limits[idx]) / resolution[idx])) for idx in
                     range(self.ndims)] #Total number of cells in each dimension
     self.total_cells = reduce(lambda x, y: x * y, self.num_cells) #Total number of cells in entire graph
-
+        
     #Calculate and store hash value for all cells
 
     #Calculate and store inverse hash value for all cells
@@ -52,3 +52,5 @@ class StateLattice():
   def get_node_from_id(self, id):
     """Return graph node for a given hash value"""
     return self.id_to_node(id)
+  
+
