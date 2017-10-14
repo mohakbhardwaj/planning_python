@@ -135,7 +135,6 @@ class XYHAnalyticLattice(StateLattice):
                      an edge connecting current node to child node (continuous states) 
     """
     succs = []
-    # print node[2]
     children = self.children[node[2]]
     parent_state = self.node_to_state(node)
     for it in children:
@@ -143,8 +142,6 @@ class XYHAnalyticLattice(StateLattice):
       child_state = self.node_to_state(child_node)
       edge = self.interpolate(parent_state, child_state)
       succs.append([child_node, edge])
-      # print len(edge)
-      # print([child_node, edge])
     return succs
 
   def get_predecessors(self, node):
@@ -197,89 +194,49 @@ class XYHAnalyticLattice(StateLattice):
     return dubins.path_length(s1, s2, self.radius)
 
   
-
-
-  # def in_bounds(self, config):
-  #   # config = self.node_id_to_configuration(node_id)
-  #   return np.all(self.lower_limits <= config) and np.all(config < self.upper_limits)
-  
-  # # def check_collision(self, node_id):
-  # #   return node_id in self.walls
-  
-  # def get_successors(self, node_id):
-  #   curr_config = self.node_id_to_configuration(node_id)
-  #   # print curr_config
-  #   results = []
-  #   obs_neighbors = []
-  #   motions = []
-  #   temp = []
-  #   int_points = []
+  def enumerate_lattice(self):
+    """For every discrete node in the lattice, we store a dictionary of [successor nodes, successor edges] and 
+    [predecessor_node, predecessor_edges]"""
+    node_to_succs = dict()
+    node_to_preds = dict()
+    start_node = self.state_to_node([self.x_lims[0], self.y_lims[0], 0])
     
-  #   for i in xrange(self.max_movement_id):
-  #     append_pose = True
-  #     curvature, length = self.movements[i]
-  #     new_config = CurveSegment.end_pose(curr_config, curvature, length)
-  #     nidx = self.configuration_to_node_id(new_config)
+    for h in range(self.num_heading):
+      h = start_node[2] + h
+      for i in range(self.num_cells[0]):
+        x = start_node[0] + i
+        for j in range(self.num_cells[1]):
+          y = start_node[1] + j
+          node = (x,y,h)
+          node_to_succs[node] = self.get_successors(node)
+          node_to_preds[node] = self.get_predecessors(node)
       
-  #     #Collision check along the motion primitive
-  #     points = CurveSegment.segment_points(curr_config, curvature, length, 0.1)
-  #     # print "new_config", new_config
-  #     # print "points ", points
-  #     for point in points:
-  #       pidx = self.configuration_to_node_id(point)
-  #       if self.check_collision(pidx):
-  #         if self.in_bounds(point):
-  #           obs_neighbors.append(pidx)
-  #         append_pose = False
-  #         break
-        
-  #       if not self.in_bounds(point):
-  #         append_pose = False
-  #         break
+    assert(len(node_to_succs.keys()) == self.total_cells), "Did not enumerate all possible successor cells"
+    assert(len(node_to_preds.keys()) == self.total_cells), "Did not enumerate all possible predecessor cells"
+    return node_to_succs, node_to_preds
 
-  #     if append_pose and self.in_bounds(new_config):
-  #       results.append(nidx)
-  #       motions.append(i)
-    
-        
-  #   return results, motions, obs_neighbors #int_points
-
-  # # Helper functions.
-  # def distance(self, p, q):
-  #   return sqrt((p[0]-q[0])**2 + (p[1]-q[1])**2)
-
-  # def states_close(self, nid_1, nid_2):
-  #   """Checks if two poses (x, y, heading) are the same within a tolerance."""
-  #   p = self.node_id_to_configuration(nid_1)
-  #   q = self.node_id_to_configuration(nid_2)
-  #   d_angle = abs((p[2]-q[2]+pi) % (2.0*pi) - pi)
-  #   return d_angle <= radians(self.deg_tol*1.0) and self.distance(p, q) <= self.dist_tol*1.0
-  #   return self.distance(p, q) <= self.dist_tol*1.0
-
-  # def cost(self, from_nid, to_nid, movement):
-  #   return self.weights.get(to_nid, 1)
-
-  # def set_rectangular_obstacles(self, obs_corner_configs, obstacle_cost):
-  #   for corners in obs_corner_configs:
-  #     #All possible thetas are in collision for given x,y
-  #     th = self.lower_limits[2]
-  #     while th <= self.upper_limits[2]:
-  #       x1, y1, th1 = self.configuration_to_grid_coord(np.array(corners[0:2]+[th]))
-  #       x2, y2, _ = self.configuration_to_grid_coord(np.array(corners[2:] +[th])) 
   
-  #       for i in xrange(x1, x2+1):
-  #         for j in xrange(y1, y2+1):
-  #           self.walls.add(self.grid_coord_to_node_id(np.array([i, j, th1])))
-  #       th += self.resolution[2]
+  def precalc_edges(self):
+    self.node_to_succs, self.node_to_preds = self.enumerate_lattice()
+    self.edge_precalc_done = True
 
-  # def get_interim_points(self, from_id, movement):
-  #   curr_config = self.node_id_to_configuration(from_id)
-  #   curvature, length = movement
-  #   points = CurveSegment.segment_points(curr_config, curvature, length, 0.1)
-  #   return [self.configuration_to_node_id(x) for x in points]
+  def precalc_costs(self, cost_fn):
+    #Do precalculation of costs here
+    print('Precalculating Edges and Costs')
+    if not self.edge_precalc_done:
+      self.precalc_edges()
+    for node in self.node_to_succs:
+      succs = self.node_to_succs[node]
+      costs = []
+      for succ_node, succ_edge in succs:
+        costs.append(cost_fn.get_cost(succ_edge))
+      self.succ_costs[node] = costs
+      
+      preds = self.node_to_preds[node]
+      costs = []
+      for pred_node, pred_edge in preds:
+        costs.append(cost_fn.get_cost(pred_edge))
+      self.pred_costs[node] = costs
 
-  # def get_motion_length(self, motion):
-  #   curvature, length = motion
-  #   return length
-
+    self.costs_precalc_done = True  
 
