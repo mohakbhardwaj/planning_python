@@ -50,8 +50,7 @@ cost_fn = PathLengthNoAng()                        #Penalize length of path
 heuristic_fn = EuclideanHeuristicNoAng()      
 
 #(Additionally, you can precalculate edges and costs on lattice for speed-ups)
-l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
-
+l.precalc_costs(cost_fn)						#useful when lattice remains same across problems
 #Step 5: Create a planning problem
 prob_params = {'heuristic_weight': 1.0}        
 start_n = l.state_to_node(start)

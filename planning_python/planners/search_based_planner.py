@@ -5,13 +5,14 @@ import numpy as np
 from threading import Thread
 import time
 
-class Planner(object):
+class SearchBasedPlanner(object):
   def __init__(self):
     self.initialized=False
 
   def initialize(self, problem):
     """Initialize the planner with some planning problem"""
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
+    self.curr_problem = problem 
     self.env        = problem.env
     self.lattice    = problem.lattice
     self.cost       = problem.cost
@@ -151,6 +152,7 @@ class Planner(object):
     """Reset the underlying problem that the planner solves while
     still persisting the information associated with the search tree"""
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
+    self.curr_problem = problem
     self.env        = problem.env
     self.lattice    = problem.lattice
     self.cost       = problem.cost

@@ -17,7 +17,6 @@ class CostFunction(object):
     @param  edge: a list of states (tuples)
     @return cost: a scalar cost value associated with that edge
     """
-
     return 0
 
 

@@ -29,6 +29,7 @@ lattice_params = {'x_lims': x_lims, 'y_lims': y_lims, 'resolution': [1, 1], 'ori
 cost_fn = PathLengthNoAng()
 heuristic_fn = EuclideanHeuristicNoAng()
 lattice = XYAnalyticLattice(lattice_params)
+lattice.precalc_costs(cost_fn)
 planner = Astar()
 start_n = lattice.state_to_node((0,0))
 goal_n = lattice.state_to_node((200, 200))
@@ -58,6 +59,7 @@ def run_benchmark(database_folders=[], num_envs=1):
         path, path_cost, num_expansions, came_from, cost_so_far, c_obs = planner.plan()
         plan_time = time.time() - start_time
         results[h_weight].append((num_expansions,plan_time))
+        planner.clear_planner() #clear the planner in the end
     
     env_name = os.path.split(os.path.split(os.path.abspath(folder))[0])[1]
     output_file_1 = "astar_2d_benchmark.json" 

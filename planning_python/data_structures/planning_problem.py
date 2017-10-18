@@ -17,13 +17,13 @@ class PlanningProblem:
     self.visualize   = visualize
     self.initialized = True
 
-  # def reset_env(self, env):
-  #   """Given the same lattice, cost, heuristic and params, reset the underlying environment"""
-  #   self.env = env
+  def reset_env(self, env):
+    """Given the same lattice, cost, heuristic and params, reset the underlying environment"""
+    self.env = env
   
-  # def reset_heuristic(self, heuristic):
-  #   """Reset the heuristic function being used"""
-  #   self.heuristic = heuristic
+  def reset_heuristic(self, heuristic):
+    """Reset the heuristic function being used"""
+    self.heuristic = heuristic
 
   
   

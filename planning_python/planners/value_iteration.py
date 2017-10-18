@@ -3,10 +3,10 @@
 from collections import defaultdict
 import numpy as np
 from planning_python.data_structures.priority_queue import PriorityQueue
-from planning_python.planners.planner import Planner
+from planning_python.planners.search_based_planner import SearchBasedPlanner
 
 
-class ValueIteration(Planner):
+class ValueIteration(SearchBasedPlanner):
   def __init__(self):
     """Planner takes as input a planning problem object and returns
       the path and generated states
