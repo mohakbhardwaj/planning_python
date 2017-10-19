@@ -25,7 +25,7 @@ x_lims = [0, 200] # low(inclusive), upper(exclusive) extents of world in x-axis
 y_lime = [0, 200] # low(inclusive), upper(exclusive) extents of world in y-axis
 start = (0, 0)   #start state(world coordinates)
 goal = (199,199) #goal state(world coordinates)
-visualize = False
+visualize = True
 
 #Step 2: Load environment from file 
 envfile = os.path.abspath("../../motion_planning_datasets/single_bugtrap/train/1.png")

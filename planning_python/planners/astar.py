@@ -68,7 +68,7 @@ class Astar(SearchBasedPlanner):
           if neighbor not in self.cost_so_far or new_g < self.cost_so_far[neighbor]:
             self.came_from[neighbor] = (curr_node, valid_edges[i])
             self.cost_so_far[neighbor] = new_g
-            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node)
+            h_val = self.heuristic_weight*self.get_heuristic(self.lattice.node_to_state(neighbor), self.goal_node)
             f_val = new_g + h_val
             self.frontier.put(neighbor, f_val, h_val)
       

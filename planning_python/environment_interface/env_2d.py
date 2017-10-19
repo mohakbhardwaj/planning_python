@@ -15,7 +15,8 @@ from planning_python.utils import helpers
 
 class Env2D():
   def __init__(self):
-      return None
+    self.plot_initialized = False
+
 
   def initialize(self, envfile, params):
     """Initialize environment from file with given params
@@ -42,6 +43,7 @@ class Env2D():
     orig_pix_x = math.floor(0 - self.x_lims[0]/self.x_res) #x coordinate of origin in pixel space
     orig_pix_y = math.floor(0 - self.y_lims[0]/self.y_res) #y coordinate of origin in pixel space
     self.orig_pix = (orig_pix_x, orig_pix_y)
+    
 
   def collision_free(self, state):
     """ Check if a state (continuous values) is in collision or not.
@@ -120,6 +122,7 @@ class Env2D():
     self.plot_state(goal, 'green')
     self.figure.canvas.draw()
     self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
+    self.plot_initialized = True
 
 
   def reset_plot(self, start, goal, grid_res=None):
@@ -156,3 +159,7 @@ class Env2D():
     self.axes.plot(state[0], state[1], marker='o', markersize=3, color = color)
     self.figure.canvas.blit(self.axes.bbox)
     self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
+  
+  def close_plot(self):
+    if self.plot_initialized:
+      plt.close(self.figure)
