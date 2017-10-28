@@ -23,7 +23,7 @@ class SearchBasedPlanner(object):
     self.heuristic_weight = problem.params['heuristic_weight']
 
     if self.visualize:
-      self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))
+      self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))#, grid_res = [self.lattice.resolution[0], self.lattice.resolution[1]])
     self.initialized = True
 
   def get_successors(self, node):
@@ -63,6 +63,7 @@ class SearchBasedPlanner(object):
     #Visualize exansion if required
     if self.visualize:
       self.visualize_search(valid_edges, invalid_edges)
+      
       
     return neighbors, costs, valid_edges, invalid_edges
 
@@ -113,7 +114,7 @@ class SearchBasedPlanner(object):
   
   def reconstruct_path(self, came_from, start_node, goal_node, cost_so_far):
     curr = goal_node
-    path = [tuple(self.lattice.node_to_state(goal_node))]
+    path = []#[tuple(self.lattice.node_to_state(goal_node))]
     path_cost = cost_so_far[goal_node]
     
     while True:
@@ -121,13 +122,14 @@ class SearchBasedPlanner(object):
       if prev is None:
         break
       #Reverse the edge and append to the path
-      edge.reverse()
-      path += edge[1:] #Note that we need to ignore first element of reversed edge to avoid duplicate entries in the final path
+      # edge.reverse()
+      # path += edge[1:] #Note that we need to ignore first element of reversed edge to avoid duplicate entries in the final path
+      path.append(edge)
       curr = prev
     #Now reverse the entire path to get correct order  
     path.reverse()
     if self.visualize:
-      self.env.plot_edge(path, 'solid', 'red', 3)
+      self.env.plot_path(path, 'solid', 'red', 3)
       # plt.pause(1)
     return path, path_cost
 

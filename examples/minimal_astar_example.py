@@ -23,9 +23,9 @@ import os
 #Step1: Set some problem parameters
 x_lims = [0, 200] # low(inclusive), upper(exclusive) extents of world in x-axis
 y_lime = [0, 200] # low(inclusive), upper(exclusive) extents of world in y-axis
-start = (0, 0)   #start state(world coordinates)
-goal = (199,199) #goal state(world coordinates)
-visualize = True
+start = (0, 0)    #start state(world coordinates)
+goal = (199,199)  #goal state(world coordinates)
+visualize = False
 
 #Step 2: Load environment from file 
 envfile = os.path.abspath("../../motion_planning_datasets/single_bugtrap/train/1.png")
@@ -61,16 +61,18 @@ prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=visualiz
 #Step 6: Create Planner object and ask it to solve the planning problem
 planner = Astar()
 planner.initialize(prob)
-plan_start_time = time.time()
-path, path_cost, num_expansions, came_from, cost_so_far, c_obs = planner.plan()
-planning_time = time.time() - plan_start_time
+path, path_cost, num_expansions, plan_time, came_from, cost_so_far, c_obs = planner.plan()
+
 
 print('Path: ', path)
 print('Path Cost: ', path_cost)
 print('Number of Expansions: ', num_expansions)
-print('Time taken: ', planning_time)
+print('Time taken: ', plan_time)
 
+e.initialize_plot(start, goal)
+e.plot_path(path)
 plt.show()
+
 
 
 

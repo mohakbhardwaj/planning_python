@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from collections import defaultdict
 import numpy as np
+import time
 from planning_python.data_structures.priority_queue import PriorityQueue
 from planning_python.planners.search_based_planner import SearchBasedPlanner
 
@@ -21,7 +22,7 @@ class Astar(SearchBasedPlanner):
 
   def plan(self, max_expansions = 100000):
     assert self.initialized == True, "Planner has not been initialized properly. Please call initialize or reset_problem function before plan function"
-
+    start_t = time.time()
     self.came_from[self.start_node]= (None, None)
     self.cost_so_far[self.start_node] = 0.
     start_h_val = self.heuristic_weight*self.get_heuristic(self.start_node, self.goal_node)
@@ -59,16 +60,16 @@ class Astar(SearchBasedPlanner):
       neighbors, edge_costs, valid_edges, invalid_edges = self.get_successors(curr_node)
 
       #Step 4: Update c_obs with collision checks performed
-      self.c_obs.append(invalid_edges)
+      # self.c_obs.append(invalid_edges)
       g = self.cost_so_far[curr_node]
       
       for i, neighbor in enumerate(neighbors):
         new_g = g + edge_costs[i]
         if neighbor not in self.visited:
-          if neighbor not in self.cost_so_far or new_g < self.cost_so_far[neighbor]:
+          if neighbor not in self.cost_so_far or new_g <= self.cost_so_far[neighbor]:
             self.came_from[neighbor] = (curr_node, valid_edges[i])
             self.cost_so_far[neighbor] = new_g
-            h_val = self.heuristic_weight*self.get_heuristic(self.lattice.node_to_state(neighbor), self.goal_node)
+            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node)
             f_val = new_g + h_val
             self.frontier.put(neighbor, f_val, h_val)
       
@@ -79,7 +80,9 @@ class Astar(SearchBasedPlanner):
       path, path_cost = self.reconstruct_path(self.came_from, self.start_node, self.goal_node, self.cost_so_far)
     else:
       print ('Found no solution, priority queue empty')
-    return path, path_cost, curr_expansions, self.came_from, self.cost_so_far, self.c_obs
+    plan_time = time.time() - start_t
+
+    return path, path_cost, curr_expansions, plan_time, self.came_from, self.cost_so_far, self.c_obs
     
   
   def clear_planner(self):

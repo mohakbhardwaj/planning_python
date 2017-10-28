@@ -11,6 +11,7 @@ import numpy as np
 import math
 from time import sleep
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimage
 from planning_python.utils import helpers
 
 class Env2D():
@@ -107,6 +108,8 @@ class Env2D():
     return self.x_lims, self.y_lims
   
   def initialize_plot(self, start, goal, grid_res=None):
+    
+    # if not self.plot_initialized:
     self.figure, self.axes = plt.subplots()
     self.axes.set_xlim(self.x_lims)
     self.axes.set_ylim(self.y_lims)
@@ -114,6 +117,7 @@ class Env2D():
       self.axes.set_xticks(np.arange(self.x_lims[0], self.x_lims[1], grid_res[0]))
       self.axes.set_yticks(np.arange(self.y_lims[0], self.y_lims[1], grid_res[1]))
       self.axes.grid(which='both')
+    
     self.figure.show()
     self.visualize_environment()
     self.line, = self.axes.plot([],[])
@@ -122,16 +126,20 @@ class Env2D():
     self.plot_state(goal, 'green')
     self.figure.canvas.draw()
     self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
+    # self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
     self.plot_initialized = True
 
 
   def reset_plot(self, start, goal, grid_res=None):
-    plt.close(self.figure)
-    self.initialize_plot(start, goal, grid_res)
+    if self.plot_initialized:
+      plt.close(self.figure) 
+      self.initialize_plot(start, goal, grid_res)
 
   def visualize_environment(self):
+    # if not self.plot_initialized:
     self.axes.imshow(self.image, extent = (self.x_lims[0], self.x_lims[1], self.y_lims[0], self.x_lims[1]), cmap='gnuplot')
-  
+
+
   def plot_edge(self, edge, linestyle='solid', color='blue', linewidth=2):
     x_list = []
     y_list = []
@@ -158,8 +166,16 @@ class Env2D():
     # self.figure.canvas.restore_region(self.background)
     self.axes.plot(state[0], state[1], marker='o', markersize=3, color = color)
     self.figure.canvas.blit(self.axes.bbox)
-    self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
+    self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox)
   
+  def plot_path(self, path, linestyle='solid', color='blue', linewidth=2):
+    flat_path = [item for sublist in path for item in sublist]
+    self.plot_edge(flat_path, linestyle, color, linewidth)
+
   def close_plot(self):
     if self.plot_initialized:
       plt.close(self.figure)
+      self.plot_initialized = False
+
+  def reset(self, envfile, params):
+    return None

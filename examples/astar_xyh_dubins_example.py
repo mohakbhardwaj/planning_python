@@ -53,7 +53,7 @@ heuristic_fn = DubinsHeuristic(turning_radius)
 l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
 
 #Step 5: Create a planning problem
-prob_params = {'heuristic_weight': 1}        #Planner is not greedy at all
+prob_params = {'heuristic_weight': 1.0}        #Planner is not greedy at all
 start_n = l.state_to_node(start_state)
 goal_n = l.state_to_node(goal_state)
 prob = PlanningProblem(prob_params)
@@ -62,15 +62,14 @@ prob.initialize(e, l, cost_fn, heuristic_fn, start_n, goal_n, visualize=visualiz
 #Step 5: Create Planner object and ask it to solve the planning problem
 planner = Astar()
 planner.initialize(prob)
-plan_start_time = time.time()
-path, path_cost, num_expansions, came_from, cost_so_far, c_obs = planner.plan()
-planning_time = time.time() - plan_start_time
+path, path_cost, num_expansions, plan_time, came_from, cost_so_far, c_obs = planner.plan()
+
 
 print('Path: ', path)
 print('Path Cost: ', path_cost)
 print('Number of Expansions: ', num_expansions)
-print('Time taken: ', planning_time)
+print('Time taken: ', plan_time)
 
 e.initialize_plot(start_state, goal_state)
-e.plot_edge(path)
+e.plot_path(path)
 plt.show()

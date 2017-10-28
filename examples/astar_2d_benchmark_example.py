@@ -25,21 +25,21 @@ x_lims = [0, 200]
 y_lims = [0, 200]
 
 env_params = {'x_lims': x_lims, 'y_lims': y_lims}
-lattice_params = {'x_lims': x_lims, 'y_lims': y_lims, 'resolution': [1, 1], 'origin': (0, 0), 'rotation': 0, 'connectivity': 'eight_connected', 'path_resolution': 1}
+lattice_params = {'x_lims': x_lims, 'y_lims': y_lims, 'resolution': [10, 10], 'origin': (0, 0), 'rotation': 0, 'connectivity': 'eight_connected', 'path_resolution': 1}
 cost_fn = PathLengthNoAng()
 heuristic_fn = EuclideanHeuristicNoAng()
 lattice = XYAnalyticLattice(lattice_params)
 lattice.precalc_costs(cost_fn)
 planner = Astar()
 start_n = lattice.state_to_node((0,0))
-goal_n = lattice.state_to_node((200, 200))
+goal_n = lattice.state_to_node((199, 199))
 
 def run_benchmark(database_folders=[], num_envs=1):
   global env_params, lattice_params, cost_fn, heuristic_fn, lattice, planner, start_n, goal_n
      
-  h_weight_list = range(1, 100, 10)
-  h_weight_list = [0] + h_weight_list
-
+  # h_weight_list = range(1, 100, 10)
+  # h_weight_list = [0] + h_weight_list
+  h_weight_list = [0]
   e = Env2D()
   print('Running benchmark')
 
@@ -53,11 +53,9 @@ def run_benchmark(database_folders=[], num_envs=1):
       for h_weight in h_weight_list: 
         prob_params = {'heuristic_weight': h_weight}
         prob = PlanningProblem(prob_params)
-        prob.initialize(e, lattice, cost_fn, heuristic_fn, start_n, goal_n, visualize=False)
+        prob.initialize(e, lattice, cost_fn, heuristic_fn, start_n, goal_n, visualize=True)
         planner.initialize(prob) 
-        start_time = time.time()
-        path, path_cost, num_expansions, came_from, cost_so_far, c_obs = planner.plan()
-        plan_time = time.time() - start_time
+        path, path_cost, num_expansions, plan_time, came_from, cost_so_far, c_obs = planner.plan()
         results[h_weight].append((num_expansions,plan_time))
         planner.clear_planner() #clear the planner in the end
     
