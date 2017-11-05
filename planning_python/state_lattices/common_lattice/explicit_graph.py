@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-class SimpleGraph:
+class ExplicitGraph():
     def __init__(self):
         self.edges = {}
         self.ndims = 2

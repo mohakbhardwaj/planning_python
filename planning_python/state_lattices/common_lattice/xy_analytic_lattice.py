@@ -154,7 +154,6 @@ class XYAnalyticLattice(StateLattice):
     node_to_succs = dict()
     node_to_preds = dict()
     start_node = self.state_to_node([self.x_lims[0], self.y_lims[0]])
-    print start_node
     for i in range(self.num_cells[0]):
       x = start_node[0] + i
       for j in range(self.num_cells[1]):

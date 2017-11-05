@@ -46,7 +46,7 @@ class ValueIteration(SearchBasedPlanner):
         break
       
       #Step 1: Pop the best node from the frontier
-      f, h, curr_node = self.frontier.get()
+      f, _, curr_node = self.frontier.get()
       
       if curr_node in self.visited:
         continue
