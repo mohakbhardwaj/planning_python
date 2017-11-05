@@ -16,6 +16,7 @@ class PlanningProblem:
     self.goal_n      = goal_n
     self.visualize   = visualize
     self.initialized = True
+    print('Planning Problem Initialized')
 
   def reset_env(self, env):
     """Given the same lattice, cost, heuristic and params, reset the underlying environment"""

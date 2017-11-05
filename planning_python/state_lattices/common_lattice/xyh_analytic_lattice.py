@@ -178,7 +178,7 @@ class XYHAnalyticLattice(StateLattice):
     step_size = self.path_resolution
     s1_n = (s1[0], s1[1], angles.normalize_angle_positive(s1[2]))
     s2_n = (s2[0], s2[1], angles.normalize_angle_positive(s2[2]))
-    edge, _ = dubins.path_sample(s1, s2, self.radius, step_size)
+    edge, _ = dubins.path_sample(s1, s2, self.radius-0.01, step_size)
 
     #Dubins returns edge in [0, 2pi], we got to normalize it to (-pi, pi] for our code
     normalized_edge = []

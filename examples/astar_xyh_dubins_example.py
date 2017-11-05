@@ -20,15 +20,15 @@ from planning_python.planners.astar import Astar
 import os
 
 #Step 1: Setup some problem parameters
-x_lims = [-10, 190]
-y_lims = [-10, 190]
+x_lims = [0, 201]
+y_lims = [0, 201]
 start_state = (0, 0, 0)
-goal_state = (150, 150, 0)
-turning_radius = 1.0
-visualize = False
+goal_state = (200, 200, 0)
+turning_radius = 3
+visualize = True
 
 #Step 2: Load environment from file 
-envfile = os.path.abspath("../../motion_planning_datasets/single_bugtrap/train/1.png")
+envfile = os.path.abspath("../../motion_planning_datasets/gaps_and_forest/train/1.png")
 env_params = {'x_lims': x_lims, 'y_lims': y_lims}
 e = Env2D()
 e.initialize(envfile, env_params)
@@ -41,13 +41,13 @@ lattice_params['radius']          = turning_radius                     # Fixed t
 lattice_params['origin']          = (start_state[0], start_state[1])   # Used for conversion from discrete to continuous and vice-versa. 
 lattice_params['rotation']        = 0                                  # Used for conversion from discrete to continuous and vice-versa 
 lattice_params['connectivity']    = 'dubins_turn_90'                   #Lattice connectivity
-lattice_params['path_resolution'] = turning_radius/2                   #Resolution for defining edges and doing collision checking (in meters)
+lattice_params['path_resolution'] = turning_radius/10                   #Resolution for defining edges and doing collision checking (in meters)
 
 l = XYHAnalyticLattice(lattice_params)
 
 #Step 4: Create cost and heuristic objects
-cost_fn = DubinsPathLength(turning_radius)                   #Penalize length of path
-heuristic_fn = DubinsHeuristic(turning_radius)      
+cost_fn = DubinsPathLength(turning_radius-0.01)                   #Penalize length of path
+heuristic_fn = DubinsHeuristic(turning_radius-0.01)      
 
 #(Additionally, you can precalculate edges and costs on lattice for speed-ups)
 l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
@@ -71,5 +71,5 @@ print('Number of Expansions: ', num_expansions)
 print('Time taken: ', plan_time)
 
 e.initialize_plot(start_state, goal_state)
-e.plot_path(path)
+e.plot_path(path, 'solid', 'red', 3)
 plt.show()

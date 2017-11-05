@@ -44,13 +44,14 @@ class SearchBasedPlanner(object):
     costs = []         #Cost associated with each of the neighbors
     valid_edges =[]    #Valid edges coming out of the node
     invalid_edges = [] #Continuous states that are first states in collision along an edge
-    
     for i,succ in enumerate(succs):
       succ_node = succ[0]
       succ_edge = succ[1]
+      # print succ_edge
       isvalid, first_coll_state = self.env.is_edge_valid(succ_edge)
       if not isvalid:
-        invalid_edges.append((succ_edge, first_coll_state))
+        if first_coll_state:
+          invalid_edges.append((succ_edge, first_coll_state))
         continue
       neighbors.append(succ_node)
       valid_edges.append(succ_edge)
@@ -63,7 +64,6 @@ class SearchBasedPlanner(object):
     #Visualize exansion if required
     if self.visualize:
       self.visualize_search(valid_edges, invalid_edges)
-      
       
     return neighbors, costs, valid_edges, invalid_edges
 
@@ -90,9 +90,10 @@ class SearchBasedPlanner(object):
     for i, pred in enumerate(preds):
       pred_node = pred[0]
       pred_edge = pred[1]
-      isvalid, first_coll_state = self.env.is_edge_valid(pred_edge)
+      isvalid, first_coll_state = self.env.is_edge_valid(pred_edge) #first_coll_state will be empty if the state simply lies outside workspace limits
       if not isvalid:
-        invalid_edges.append((pred_edge, first_coll_state))
+        if first_coll_state:
+          invalid_edges.append((pred_edge, first_coll_state))
         continue
       neighbors.append(pred_node)
       valid_edges.append(pred_edge)

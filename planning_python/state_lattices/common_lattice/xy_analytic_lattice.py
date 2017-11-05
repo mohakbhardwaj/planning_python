@@ -57,11 +57,11 @@ class XYAnalyticLattice(StateLattice):
     """Convert a continuous state(in world coordinates) to a discrete node()in lattice coordinates)"""
     node = np.asarray(state)
     node -= self.origin
-    node = np.divide(state, self.resolution)
+    node = np.divide(node, self.resolution)
     #we need to rotate the state to lattice coordinates
     node = np.array([ cos(self.rotation)*node[0] + sin(self.rotation)*node[1], 
                      -sin(self.rotation)*node[0] + cos(self.rotation)*node[1]]) 
-    node = node.astype(int, copy=False)
+    node = node.astype(int, copy=False) 
     return tuple(node)
 
   def get_edge(self, parent_node, child_node):
@@ -154,7 +154,7 @@ class XYAnalyticLattice(StateLattice):
     node_to_succs = dict()
     node_to_preds = dict()
     start_node = self.state_to_node([self.x_lims[0], self.y_lims[0]])
-    
+    print start_node
     for i in range(self.num_cells[0]):
       x = start_node[0] + i
       for j in range(self.num_cells[1]):

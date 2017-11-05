@@ -25,7 +25,7 @@ x_lims = [0, 200]
 y_lims = [0, 200]
 
 env_params = {'x_lims': x_lims, 'y_lims': y_lims}
-lattice_params = {'x_lims': x_lims, 'y_lims': y_lims, 'resolution': [10, 10], 'origin': (0, 0), 'rotation': 0, 'connectivity': 'eight_connected', 'path_resolution': 1}
+lattice_params = {'x_lims': x_lims, 'y_lims': y_lims, 'resolution': [1, 1], 'origin': (0, 0), 'rotation': 0, 'connectivity': 'eight_connected', 'path_resolution': 1}
 cost_fn = PathLengthNoAng()
 heuristic_fn = EuclideanHeuristicNoAng()
 lattice = XYAnalyticLattice(lattice_params)

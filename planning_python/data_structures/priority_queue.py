@@ -68,6 +68,6 @@ class PriorityQueue:
     return priority1, priority2, curr_node
 
   def clear(self):
-    self.elements = []
-    self.entry_finder = {}
+    del self.elements[:]
+    self.entry_finder.clear()
     self.curr_len = 0

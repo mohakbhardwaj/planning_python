@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from collections import defaultdict
 import numpy as np
+import time
 from planning_python.data_structures.priority_queue import PriorityQueue
 from planning_python.planners.search_based_planner import SearchBasedPlanner
 
@@ -15,6 +16,7 @@ class BackwardAstar(SearchBasedPlanner):
 
   def plan(self, max_expansions = 100000):
     assert self.initialized == True, "Planner has not been initialized properly. Please call initialize or reset_problem function before plan function"
+    start_t = time.time()
     frontier = PriorityQueue()  #Initialize open list
     visited = dict()   #Initialized closed(visited) set
     c_obs = []                  #Initialize Cobs list
@@ -72,18 +74,19 @@ class BackwardAstar(SearchBasedPlanner):
           if neighbor not in cost_so_far or new_g < cost_so_far[neighbor]:
             came_from[neighbor] = (curr_node, valid_edges[i])
             cost_so_far[neighbor] = new_g
-            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.start_node, came_from, cost_so_far, list(visited), c_obs)
+            h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node)
             f_val = new_g + h_val
             frontier.put(neighbor, f_val, h_val)
       
       #Step 5:increment number of expansions
       curr_expansions += 1
-
+ 
     if found_goal:
       path, path_cost = self.reconstruct_path(came_from, self.goal_node, self.start_node, cost_so_far)
     else:
       print ('Found no solution, priority queue empty')
-    return path, path_cost, curr_expansions, came_from, cost_so_far, c_obs
+    plan_time = time.time() - start_t
+    return path, path_cost, curr_expansions, plan_time, came_from, cost_so_far, c_obs
     
   
   def clear_planner(self):

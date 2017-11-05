@@ -26,7 +26,7 @@ class Astar(SearchBasedPlanner):
     self.came_from[self.start_node]= (None, None)
     self.cost_so_far[self.start_node] = 0.
     start_h_val = self.heuristic_weight*self.get_heuristic(self.start_node, self.goal_node)
-    self.frontier.put(self.start_node, 0 + start_h_val, start_h_val)
+    self.frontier.put(self.start_node, 0.0 + start_h_val, 0.0)# start_h_val)
 
     curr_expansions = 0         #Number of expansions done
     num_rexpansions = 0
@@ -46,6 +46,7 @@ class Astar(SearchBasedPlanner):
       
       #Step 1: Pop the best node from the frontier
       f, h, curr_node = self.frontier.get()
+      # print curr_node
       if curr_node in self.visited:
         continue
       #Step 2: Add to visited
@@ -71,7 +72,7 @@ class Astar(SearchBasedPlanner):
             self.cost_so_far[neighbor] = new_g
             h_val = self.heuristic_weight*self.get_heuristic(neighbor, self.goal_node)
             f_val = new_g + h_val
-            self.frontier.put(neighbor, f_val, h_val)
+            self.frontier.put(neighbor, f_val, new_g)
       
       #Step 5:increment number of expansions
       curr_expansions += 1

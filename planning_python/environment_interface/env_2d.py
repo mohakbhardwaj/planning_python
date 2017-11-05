@@ -12,11 +12,14 @@ import math
 from time import sleep
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimage
+from scipy import ndimage
 from planning_python.utils import helpers
 
 class Env2D():
   def __init__(self):
     self.plot_initialized = False
+    self.distance_transform_available = False
+    self.image = None
 
 
   def initialize(self, envfile, params):
@@ -38,13 +41,14 @@ class Env2D():
     self.x_lims = params['x_lims']
     self.y_lims = params['y_lims']
 
-    self.x_res  = (self.x_lims[1] - self.x_lims[0])/((self.image.shape[0]-1)*1.)
-    self.y_res  = (self.y_lims[1] - self.y_lims[0])/((self.image.shape[1]-1)*1.)
+    self.x_res  = (self.x_lims[1] - self.x_lims[0])/((self.image.shape[1]-1)*1.)
+    self.y_res  = (self.y_lims[1] - self.y_lims[0])/((self.image.shape[0]-1)*1.)
 
     orig_pix_x = math.floor(0 - self.x_lims[0]/self.x_res) #x coordinate of origin in pixel space
     orig_pix_y = math.floor(0 - self.y_lims[0]/self.y_res) #y coordinate of origin in pixel space
     self.orig_pix = (orig_pix_x, orig_pix_y)
-    
+    self.distance_transform_available = False
+   
 
   def collision_free(self, state):
     """ Check if a state (continuous values) is in collision or not.
@@ -53,8 +57,13 @@ class Env2D():
       @return 1 - free
               0 - collision
     """
-    pix_x, pix_y = self.to_image_coordinates(state)
-    return round(self.image[pix_y][pix_x])
+    try:
+      pix_x, pix_y = self.to_image_coordinates(state)
+      return round(self.image[pix_y][pix_x])
+    except IndexError:
+      print("Out of bounds, ", state, pix_x, pix_y)
+      return 0
+    
 
   def in_limits(self, state):
     """Filters a state to lie between the environment limits
@@ -63,7 +72,11 @@ class Env2D():
     @return 1 - in limits
           0 - not in limits
     """
-    return self.x_lims[0] <= state[0] < self.x_lims[1] and self.y_lims[0] <= state[1] < self.y_lims[1]
+    pix_x, pix_y = self.to_image_coordinates(state)    
+    if 0 <= pix_x < self.image.shape[1] and 0<= pix_y < self.image.shape[0] and self.x_lims[0] <= state[0] < self.x_lims[1] and self.y_lims[0] <= state[1] < self.y_lims[1]:
+      return True
+    return False
+
 
   def is_state_valid(self, state):
     """Checks if state is valid.
@@ -87,7 +100,10 @@ class Env2D():
     valid_edge = True
     first_coll_state = None
     for state in edge:
-      if not self.is_state_valid(state):
+      if not self.in_limits(state):
+        valid_edge = False
+        break
+      if not self.collision_free(state):
         valid_edge = False
         first_coll_state = state
         break
@@ -103,10 +119,42 @@ class Env2D():
     pix_x = int(self.orig_pix[0] + math.floor(state[0]/self.x_res))
     pix_y = int(self.image.shape[1]-1 - (self.orig_pix[1] + math.floor(state[1]/self.y_res)))
     return (pix_x,pix_y)
+  
+  def to_world_coordinates(self, pix):
+    """Helper function that returns world coordinates for a pixel
+
+    @param  - state in continuous world coordinates
+    @return - state in pixel coordinates """
+    world_x = (pix[0] - self.orig_pix[0])*self.x_res 
+    world_y = (pix[1] - self.orig_pix[0])*self.y_res   
+    return (world_x, world_y)
 
   def get_env_lims(self):
     return self.x_lims, self.y_lims
   
+  def calculate_distance_transform(self, sampling=[1,1]):
+    if not self.distance_transform_available:
+      sampling_pix = np.divide(np.array(sampling), np.array([self.x_res, self.y_res]))
+      self.edt= ndimage.distance_transform_edt(self.image, sampling)
+      self.norm_edt = self.edt/np.amax(self.edt)
+      self.dy, self.dx = np.gradient(self.edt) #get gradients as well 
+      self.dy_norm = self.dy/np.amax(self.dy)
+      self.dx_norm = self.dx/np.amax(self.dx)
+      self.distance_transform_available = True
+      print('Calculated Distance Transform')
+  
+  def get_obstacle_distance(self, state, norm=True):
+    pix_x, pix_y = self.to_image_coordinates(state)
+    if norm:
+      d_obs = self.norm_edt[pix_y][pix_x] #distance to obstacle    
+      obs_dx = self.dx_norm[pix_y][pix_x] #gradient in x direction 
+      obs_dy = self.dy_norm[pix_y][pix_x] #gradient in y direction     
+    else:
+      d_obs = self.edt[pix_y][pix_x] #distance to obstacle    
+      obs_dx = self.dx[pix_y][pix_x] #gradient in x direction 
+      obs_dy = self.dy[pix_y][pix_x] #gradient in y direction 
+    return d_obs, obs_dx, obs_dy
+
   def initialize_plot(self, start, goal, grid_res=None):
     
     # if not self.plot_initialized:
@@ -177,5 +225,11 @@ class Env2D():
       plt.close(self.figure)
       self.plot_initialized = False
 
-  def reset(self, envfile, params):
-    return None
+  def clear(self):
+    if self.plot_initialized:
+      plt.close(self.figure)
+      self.plot_initialized = False
+    if self.distance_transform_available:
+      del self.edt[:], self.norm_edt[:], self.dy[:], self.dx[:], self.dy_norm[:], self.dx_norm[:]
+      self.distance_transform_available = False
+    self.image = None
