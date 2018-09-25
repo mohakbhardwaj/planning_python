@@ -99,5 +99,6 @@ class DubinsHeuristic(HeuristicFunction):
     assert len(goal) == 3, "goal must be of form (x,y,heading)"
     s = (state[0], state[1], angles.normalize_angle_positive(state[2]))
     g = (goal[0], goal[1], angles.normalize_angle_positive(goal[2]))
-    return dubins.path_length(s, g, self.turning_radius)
+    path = dubins.shortest_path(s, g, self.turning_radius-0.01)
+    return path.path_length()
 

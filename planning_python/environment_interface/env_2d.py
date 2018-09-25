@@ -155,17 +155,15 @@ class Env2D():
       obs_dy = self.dy[pix_y][pix_x] #gradient in y direction 
     return d_obs, obs_dx, obs_dy
 
-  def initialize_plot(self, start, goal, grid_res=None):
-    
+  def initialize_plot(self, start, goal, grid_res=None, plot_grid=False):
     # if not self.plot_initialized:
     self.figure, self.axes = plt.subplots()
     self.axes.set_xlim(self.x_lims)
     self.axes.set_ylim(self.y_lims)
-    if grid_res is not None:
+    if plot_grid and grid_res:
       self.axes.set_xticks(np.arange(self.x_lims[0], self.x_lims[1], grid_res[0]))
       self.axes.set_yticks(np.arange(self.y_lims[0], self.y_lims[1], grid_res[1]))
       self.axes.grid(which='both')
-    
     self.figure.show()
     self.visualize_environment()
     self.line, = self.axes.plot([],[])
@@ -174,7 +172,6 @@ class Env2D():
     self.plot_state(goal, 'green')
     self.figure.canvas.draw()
     self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
-    # self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
     self.plot_initialized = True
 
 

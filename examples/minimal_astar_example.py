@@ -25,7 +25,7 @@ x_lims = [0, 201] # low(inclusive), upper(exclusive) extents of world in x-axis
 y_lims = [0, 201] # low(inclusive), upper(exclusive) extents of world in y-axis
 start = (10, 10)    #start state(world coordinates)
 goal = (199, 199)  #goal state(world coordinates)
-visualize = True
+visualize = False
 
 #Step 2: Load environment from file 
 envfile = os.path.abspath("../../motion_planning_datasets/forest/train/259.png")
@@ -37,7 +37,7 @@ e.initialize(envfile, env_params)
 lattice_params = dict()
 lattice_params['x_lims']          = x_lims # Usefule to calculate number of cells in lattice 
 lattice_params['y_lims']          = y_lims # Useful to calculate number of cells in lattice
-lattice_params['resolution']      = [10, 10]   # Useful to calculate number of cells in lattice + conversion from discrete to continuous space and vice-versa
+lattice_params['resolution']      = [1, 1]   # Useful to calculate number of cells in lattice + conversion from discrete to continuous space and vice-versa
 lattice_params['origin']          = start    # Used for conversion from discrete to continuous and vice-versa. 
 lattice_params['rotation']        = 0        # Can rotate lattice with respect to world
 lattice_params['connectivity']    = 'eight_connected' #Lattice connectivity (can be four or eight connected for xylattice)
@@ -69,7 +69,7 @@ print('Path Cost: ', path_cost)
 print('Number of Expansions: ', num_expansions)
 print('Time taken: ', plan_time)
 
-e.initialize_plot(start, goal, grid_res=lattice_params['resolution'])
+e.initialize_plot(start, goal, grid_res=lattice_params['resolution'], plot_grid=False)
 e.plot_path(path, 'solid', 'red', 3)
 plt.show()
 

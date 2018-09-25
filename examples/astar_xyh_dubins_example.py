@@ -23,8 +23,8 @@ import os
 x_lims = [0, 201]
 y_lims = [0, 201]
 start_state = (0, 0, 0)
-goal_state = (200, 200, 0)
-turning_radius = 3
+goal_state = (199, 199, 0)
+turning_radius = 5
 visualize = True
 
 #Step 2: Load environment from file 
@@ -50,7 +50,7 @@ cost_fn = DubinsPathLength(turning_radius-0.01)                   #Penalize leng
 heuristic_fn = DubinsHeuristic(turning_radius-0.01)      
 
 #(Additionally, you can precalculate edges and costs on lattice for speed-ups)
-l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
+# l.precalc_costs(cost_fn)						#especially helpful when lattice remains same across problems
 
 #Step 5: Create a planning problem
 prob_params = {'heuristic_weight': 1.0}        #Planner is not greedy at all
