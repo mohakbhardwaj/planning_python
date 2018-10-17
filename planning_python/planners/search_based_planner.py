@@ -47,12 +47,12 @@ class SearchBasedPlanner(object):
     for i,succ in enumerate(succs):
       succ_node = succ[0]
       succ_edge = succ[1]
-      # print succ_edge
-      isvalid, first_coll_state = self.env.is_edge_valid(succ_edge)
-      if not isvalid:
-        if first_coll_state:
-          invalid_edges.append((succ_edge, first_coll_state))
-        continue
+      if self.env is not None: #If environment is initialized. 
+        isvalid, first_coll_state = self.env.is_edge_valid(succ_edge)
+        if not isvalid:
+          if first_coll_state:
+            invalid_edges.append((succ_edge, first_coll_state))
+          continue
       neighbors.append(succ_node)
       valid_edges.append(succ_edge)
 
@@ -90,11 +90,12 @@ class SearchBasedPlanner(object):
     for i, pred in enumerate(preds):
       pred_node = pred[0]
       pred_edge = pred[1]
-      isvalid, first_coll_state = self.env.is_edge_valid(pred_edge) #first_coll_state will be empty if the state simply lies outside workspace limits
-      if not isvalid:
-        if first_coll_state:
-          invalid_edges.append((pred_edge, first_coll_state))
-        continue
+      if self.env is not None:
+        isvalid, first_coll_state = self.env.is_edge_valid(pred_edge) #first_coll_state will be empty if the state simply lies outside workspace limits
+        if not isvalid:
+          if first_coll_state:
+            invalid_edges.append((pred_edge, first_coll_state))
+          continue
       neighbors.append(pred_node)
       valid_edges.append(pred_edge)
       if self.lattice.costs_precalc_done:

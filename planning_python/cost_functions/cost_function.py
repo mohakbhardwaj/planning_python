@@ -72,3 +72,21 @@ class UnitCost(CostFunction):
   def get_cost(self, edge):
     cost = 1
     return cost
+
+class LazyCost(CostFunction):
+  """Return true cost for evaluated edges and cost estimate for unevaluated edges"""
+  def __init__(self, w_est, weight):
+    super(LazyCost, self).__init__()
+    self.w_est = w_est
+    self.weight = weight
+    self.eval_edges = dict() 
+
+  def get_cost(self, edge):
+    #Convert edge to id (use list for now)
+    #Check if id in self.eval_edges and return stored true weight
+    #Else return self.weight*self.w_est.get_cost(edge)
+    return 1
+
+  def add_edges(self, edges, costs):
+    #Append edges to list of evaluated edges
+    return None
