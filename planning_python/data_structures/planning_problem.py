@@ -11,6 +11,7 @@ class PlanningProblem:
     self.env         = env
     self.lattice     = lattice
     self.cost        = cost
+    self.lazy_cost   = None
     self.heuristic   = heuristic
     self.start_n     = start_n
     self.goal_n      = goal_n
@@ -26,5 +27,7 @@ class PlanningProblem:
     """Reset the heuristic function being used"""
     self.heuristic = heuristic
 
-  
+  def set_lazy_cost(self, lazy_cost):
+    """Lazy cost function to be used for LSP planners"""
+    self.lazy_cost = lazy_cost
   

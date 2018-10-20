@@ -84,9 +84,12 @@ class LazyCost(CostFunction):
   def get_cost(self, edge):
     #Convert edge to id (use list for now)
     #Check if id in self.eval_edges and return stored true weight
-    #Else return self.weight*self.w_est.get_cost(edge)
-    return 1
+    #Else return 
+    edge = tuple(edge)
+    if edge in self.eval_edges:
+      return self.eval_edges[cost]
+    return self.w_est().get_cost(edge)
 
-  def add_edges(self, edges, costs):
+  def add_edge(self, edge, cost):
     #Append edges to list of evaluated edges
-    return None
+    self.eval_edges[edge] = cost

@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, "../..")
 
+from lsp_planner import LSPPlanner
 from search_based_planner import SearchBasedPlanner
 from astar import Astar
 from backward_astar import BackwardAstar
