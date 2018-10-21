@@ -61,13 +61,14 @@ prob.set_lazy_cost(lazy_cost_fn)
 #Step 6: Create Planner object and ask it to solve the planning problem
 planner = LSPPlanner()
 base_planner = Astar()
-planner.initialize(prob, base_planner)
-path, path_cost, num_edge_evals, plan_time, num_iters = planner.plan()
+planner.initialize(prob, base_planner, policy=0)
+path, path_cost, num_edge_evals, plan_time, num_iters = planner.plan(max_iters=50)
 
 print('Path: ', path)
 print('Path Cost: ', path_cost)
 print('Number of Expansions: ', num_edge_evals)
 print('Time taken: ', plan_time)
+print('Num planning iterations', num_iters)
 
 e.initialize_plot(start, goal, grid_res=lattice_params['resolution'], plot_grid=False)
 e.plot_path(path, 'solid', 'red', 3)

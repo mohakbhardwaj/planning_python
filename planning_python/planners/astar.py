@@ -46,7 +46,6 @@ class Astar(SearchBasedPlanner):
       
       #Step 1: Pop the best node from the frontier
       f, h, curr_node = self.frontier.get()
-      print curr_node
       if curr_node in self.visited:
         continue
       #Step 2: Add to visited
@@ -88,9 +87,8 @@ class Astar(SearchBasedPlanner):
   
   def clear_planner(self):
     self.frontier.clear()
-    self.visited = {}
+    self.visited.clear()
+    self.cost_so_far.clear()
+    self.came_from.clear()
     self.c_obs = []
-    self.cost_so_far = {}
-    self.came_from = {}
-
     

@@ -2,8 +2,8 @@
 from math import sqrt
 import numpy as np
 import dubins
-
 from planning_python.utils import angles
+from copy import deepcopy
 
 class CostFunction(object):
   """ Wrapper class for generic cost functions
@@ -85,11 +85,11 @@ class LazyCost(CostFunction):
     #Convert edge to id (use list for now)
     #Check if id in self.eval_edges and return stored true weight
     #Else return 
-    edge = tuple(edge)
+    # edge = tuple(edge)
     if edge in self.eval_edges:
-      return self.eval_edges[cost]
+      return self.eval_edges[edge]
     return self.w_est().get_cost(edge)
 
   def add_edge(self, edge, cost):
     #Append edges to list of evaluated edges
-    self.eval_edges[edge] = cost
+    self.eval_edges[deepcopy(edge)] = cost

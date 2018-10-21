@@ -143,7 +143,7 @@ class XYAnalyticLattice(StateLattice):
       edge.append(tuple(temp))
     #Add final state to edge
     edge.append(tuple(s2))
-    return edge
+    return tuple(edge)
   
   def distance_bw_states(self, s1, s2):
     return np.linalg.norm(s1-s2)
