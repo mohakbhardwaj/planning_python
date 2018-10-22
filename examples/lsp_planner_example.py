@@ -10,6 +10,7 @@ Date: 20 October, 2018
 import sys
 sys.path.insert(0, "..")
 import matplotlib.pyplot as plt
+import numpy as np
 import time
 from planning_python.environment_interface.env_2d import Env2D
 from planning_python.state_lattices.common_lattice.xy_analytic_lattice import XYAnalyticLattice
@@ -48,7 +49,7 @@ l = XYAnalyticLattice(lattice_params)
 #Step 4: Create cost and heuristic objects
 true_cost_fn = PathLengthNoAng()                        #Penalize length of path
 heuristic_fn = EuclideanHeuristicNoAng()      
-lazy_cost_fn = LazyCost(PathLengthNoAng, weight=1)
+lazy_cost_fn = LazyCost(PathLengthNoAng(), weight=1)
 
 #Step 5: Create a planning problem
 prob_params = {'heuristic_weight': 1.0}        
@@ -62,11 +63,11 @@ prob.set_lazy_cost(lazy_cost_fn)
 planner = LSPPlanner()
 base_planner = Astar()
 planner.initialize(prob, base_planner, policy=0)
-path, path_cost, num_edge_evals, plan_time, num_iters = planner.plan(max_iters=50)
+path, path_cost, num_edge_evals, plan_time, num_iters = planner.plan(max_iters=np.inf)
 
 print('Path: ', path)
-print('Path Cost: ', path_cost)
-print('Number of Expansions: ', num_edge_evals)
+print('Path cost: ', path_cost)
+print('Num edge evaluations: ', num_edge_evals)
 print('Time taken: ', plan_time)
 print('Num planning iterations', num_iters)
 

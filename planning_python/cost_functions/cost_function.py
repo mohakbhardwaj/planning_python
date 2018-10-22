@@ -79,17 +79,15 @@ class LazyCost(CostFunction):
     super(LazyCost, self).__init__()
     self.w_est = w_est
     self.weight = weight
-    self.eval_edges = dict() 
+    self.e_eval = dict() 
 
   def get_cost(self, edge):
-    #Convert edge to id (use list for now)
-    #Check if id in self.eval_edges and return stored true weight
+    #Check if edge in self.eval_edges and return stored true weight
     #Else return 
-    # edge = tuple(edge)
-    if edge in self.eval_edges:
-      return self.eval_edges[edge]
-    return self.w_est().get_cost(edge)
+    if edge in self.e_eval:
+      return self.e_eval[edge]
+    return self.weight*self.w_est.get_cost(edge)
 
   def add_edge(self, edge, cost):
-    #Append edges to list of evaluated edges
-    self.eval_edges[deepcopy(edge)] = cost
+    #Append edges to dictionary of evaluated edges
+    self.e_eval[deepcopy(edge)] = cost
