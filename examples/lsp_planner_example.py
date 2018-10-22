@@ -47,7 +47,7 @@ lattice_params['path_resolution'] = 1         #Resolution for defining edges and
 l = XYAnalyticLattice(lattice_params)
 
 #Step 4: Create cost and heuristic objects
-true_cost_fn = PathLengthNoAng()                        #Penalize length of path
+true_cost_fn = PathLengthNoAng()  #Penalize length of path
 heuristic_fn = EuclideanHeuristicNoAng()      
 lazy_cost_fn = LazyCost(PathLengthNoAng(), weight=1)
 

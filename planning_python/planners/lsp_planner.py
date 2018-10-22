@@ -47,8 +47,10 @@ class LSPPlanner(object):
     run_base_planner = True
     while self.iter < max_iters:
       iter_start_time = time.time()
+      base_plan_time = 0
+      base_plan_expansions = 0
       if run_base_planner:
-        cand_path, path_cost, curr_expansions, base_plan_time, _, _, _ = self.base_planner.plan()
+        cand_path, path_cost, base_plan_expansions, base_plan_time, _, _, _ = self.base_planner.plan()
       # if self.check_path_found(cand_path):
       #   print('Path found')
       #   break
@@ -60,7 +62,7 @@ class LSPPlanner(object):
       num_evals += curr_evals
       self.reset_base_planner()
 
-      print('Iteration %d, base_planner_expansions %f, base planning time = %f, total time =  %f'%(self.iter, curr_expansions, base_plan_time, time.time() - iter_start_time))
+      print('Iteration %d, base_planner_expansions %f, base planning time = %f, total time =  %f'%(self.iter, base_plan_expansions, base_plan_time, time.time() - iter_start_time))
       self.iter += 1
 
     plan_time = time.time() - start_time
@@ -82,7 +84,7 @@ class LSPPlanner(object):
             succs = self.lattice.get_successors(node)
           for i,e in enumerate(succs):
             e_selected.append(e[1])
-          return e_ret
+          break
     elif policy == 1: 
       #SelectForward policy
       for edge in path:
@@ -97,6 +99,7 @@ class LSPPlanner(object):
       #SelectAlternate policy
       e_selected = [path[0]]
     return e_selected
+
   # def check_path_found(self, path):
   #   done = True
   #   for edge in path:
