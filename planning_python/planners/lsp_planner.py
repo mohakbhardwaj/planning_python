@@ -36,7 +36,6 @@ class LSPPlanner(object):
       self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))#, grid_res = [self.lattice.resolution[0], self.lattice.resolution[1]])
     self.initialized = True
     self.iter = 0  #Number of planning iterations till solution found
-    # self.e_eval = dict() #Edges that have been evaluated with their true cost
 
   def plan(self, max_iters = np.inf):
     start_time = time.time()
@@ -99,16 +98,6 @@ class LSPPlanner(object):
       #SelectAlternate policy
       e_selected = [path[0]]
     return e_selected
-
-  # def check_path_found(self, path):
-  #   done = True
-  #   for edge in path:
-  #     if edge in self.e_eval:
-  #       continue
-  #     else:
-  #       done = False
-  #       break
-  #   return done 
 
   def update_cost_and_e_eval(self, e_selected):
     num_eval = 0
