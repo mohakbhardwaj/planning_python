@@ -1,9 +1,17 @@
 #!/usr/bin/env python
-"""A minimal example that loads an environment from a png file, runs lazy shortest path planner and returns the path. 
-The search process and final path are rendered
+"""An example that runs lsp planner on a database and returns the results
 
 Author: Mohak Bhardwaj
-Date: 20 October, 2018
+Date: 30 October, 2018
+
+Reference: http://personalrobotics.ri.cmu.edu/files/courses/16843/notes/lazysp/lazysp-2016.pdf
+
+POLCIES:
+0 - SelectExpand
+1 - SelectForward
+2 - SelectReverse
+3 - SelectAlternate
+4 - SelectBisection 
 
 """
 
@@ -18,6 +26,7 @@ from planning_python.cost_functions.cost_function import PathLengthNoAng, UnitCo
 from planning_python.heuristic_functions.heuristic_function import EuclideanHeuristicNoAng, ManhattanHeuristicNoAng
 from planning_python.data_structures.planning_problem import PlanningProblem
 from planning_python.planners import LSPPlanner, Astar
+from planning_python.utils import helpers
 import os
 
 
@@ -26,7 +35,8 @@ x_lims = [0, 201] # low(inclusive), upper(exclusive) extents of world in x-axis
 y_lims = [0, 201] # low(inclusive), upper(exclusive) extents of world in y-axis
 start = (10, 10)    #start state(world coordinates)
 goal = (199, 199)  #goal state(world coordinates)
-visualize = False
+visualize = True
+suppress_output = False
 
 #Step 2: Load environment from file 
 envfile = os.path.abspath("../../motion_planning_datasets/forest/train/259.png")
@@ -63,13 +73,19 @@ prob.set_lazy_cost(lazy_cost_fn)
 planner = LSPPlanner()
 base_planner = Astar()
 planner.initialize(prob, base_planner, policy=0)
-path, path_cost, num_edge_evals, plan_time, num_iters = planner.plan(max_iters=np.inf)
+
+if suppress_output:
+  with helpers.nostdout():
+    path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=True)
+else:
+	path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=True)
 
 print('Path: ', path)
 print('Path cost: ', path_cost)
 print('Num edge evaluations: ', num_edge_evals)
 print('Time taken: ', plan_time)
 print('Num planning iterations', num_iters)
+print('Num base planner calls', num_base_calls)
 
 e.initialize_plot(start, goal, grid_res=lattice_params['resolution'], plot_grid=False)
 e.plot_path(path, 'solid', 'red', 3)

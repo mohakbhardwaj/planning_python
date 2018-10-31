@@ -22,7 +22,7 @@ class SearchBasedPlanner(object):
     self.goal_node  = problem.goal_n
     self.heuristic_weight = problem.params['heuristic_weight']
 
-    if self.visualize:
+    if self.visualize and self.env is not None:
       self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))#, grid_res = [self.lattice.resolution[0], self.lattice.resolution[1]])
     self.initialized = True
 
@@ -62,7 +62,7 @@ class SearchBasedPlanner(object):
       else:
         costs.append(self.cost.get_cost(succ_edge))
     #Visualize exansion if required
-    if self.visualize:
+    if self.visualize and self.env is not None:
       self.visualize_search(valid_edges, invalid_edges)
       
     return neighbors, costs, valid_edges, invalid_edges
@@ -102,7 +102,7 @@ class SearchBasedPlanner(object):
         costs.append(self.lattice.pred_costs[node][i])
       else:
         costs.append(self.cost.get_cost(pred_edge))
-    if self.visualize:
+    if self.visualize and self.env is not None:
       self.visualize_search(valid_edges, invalid_edges)
       
     return neighbors, costs, valid_edges, invalid_edges    
@@ -130,7 +130,7 @@ class SearchBasedPlanner(object):
       curr = prev
     #Now reverse the entire path to get correct order  
     path.reverse()
-    if self.visualize:
+    if self.visualize and self.env is not None:
       self.env.plot_path(path, 'solid', 'red', 3)
       # plt.pause(1)
     return path, path_cost
@@ -166,7 +166,7 @@ class SearchBasedPlanner(object):
     self.goal_node  = problem.goal_n
     self.heuristic_weight = problem.params['heuristic_weight']
 
-    if self.visualize:
+    if self.visualize and self.env is not None:
       self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))
     self.initialized = True    
 
