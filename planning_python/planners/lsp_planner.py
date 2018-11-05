@@ -15,7 +15,7 @@ class LSPPlanner(object):
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
     self.problem    = problem 
     self.env        = problem.env
-    self.lattice    = problem.lattice
+    self.graph    = problem.graph
     self.true_cost  = problem.cost
     self.lazy_cost  = problem.lazy_cost
     self.heuristic  = problem.heuristic
@@ -34,7 +34,7 @@ class LSPPlanner(object):
     self.obs_cost = obs_cost #Cost to be given to edges in collision
 
     if self.visualize:
-      self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))#, grid_res = [self.lattice.resolution[0], self.lattice.resolution[1]])
+      self.env.initialize_plot(self.graph.node_to_state(self.start_node), self.graph.node_to_state(self.goal_node))#, grid_res = [self.graph.resolution[0], self.graph.resolution[1]])
     self.initialized = True
     self.iter = 0  #Number of planning iterations till solution found
 
@@ -141,11 +141,11 @@ class LSPPlanner(object):
     for edge in path:
       if edge not in self.lazy_cost.e_eval:
         #Look-up successor edges for first node in edge
-        node = self.lattice.state_to_node(edge[0])      
-        if self.lattice.edge_precalc_done:
-          succs = self.lattice.node_to_succs[node]
+        node = self.graph.state_to_node(edge[0])      
+        if self.graph.edge_precalc_done:
+          succs = self.graph.node_to_succs[node]
         else:  
-          succs = self.lattice.get_successors(node)
+          succs = self.graph.get_successors(node)
         for i,e in enumerate(succs):
           e_selected.append(e[1])
         break

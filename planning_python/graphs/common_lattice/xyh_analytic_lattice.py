@@ -7,7 +7,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-from planning_python.state_lattices.state_lattice import StateLattice
+from planning_python.graphs.state_lattice import StateLattice
 from planning_python.utils import angles
 
 class XYHAnalyticLattice(StateLattice):

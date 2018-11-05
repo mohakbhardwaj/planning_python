@@ -7,9 +7,9 @@ class PlanningProblem:
     self.initialized = False
     self.params = params
 
-  def initialize(self, env=None, lattice=None, cost=None, heuristic=None, start_n=None, goal_n=None, visualize=False):
+  def initialize(self, env=None, graph=None, cost=None, heuristic=None, start_n=None, goal_n=None, visualize=False):
     self.env         = env
-    self.lattice     = lattice
+    self.graph       = graph
     self.cost        = cost
     self.lazy_cost   = None
     self.heuristic   = heuristic
@@ -20,7 +20,7 @@ class PlanningProblem:
     print('Planning Problem Initialized')
 
   def reset_env(self, env):
-    """Given the same lattice, cost, heuristic and params, reset the underlying environment"""
+    """Given the same graph, cost, heuristic and params, reset the underlying environment"""
     self.env = env
   
   def reset_heuristic(self, heuristic):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 sys.path.insert(0, "../..")
-from planning_python.state_lattices.common_lattice.xy_analytic_lattice import XYAnalyticLattice
+from planning_python.graphs.common_lattice.xy_analytic_lattice import XYAnalyticLattice
 
 def construct_and_test_lattice(params):
   lattice = XYAnalyticLattice(params)

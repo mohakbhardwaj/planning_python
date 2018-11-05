@@ -12,7 +12,7 @@ sys.path.insert(0, "..")
 import matplotlib.pyplot as plt
 import time
 from planning_python.environment_interface.env_2d import Env2D
-from planning_python.state_lattices.common_lattice.xy_analytic_lattice import XYAnalyticLattice
+from planning_python.graphs.common_lattice.xy_analytic_lattice import XYAnalyticLattice
 from planning_python.cost_functions.cost_function import PathLengthNoAng
 from planning_python.heuristic_functions.heuristic_function import EuclideanHeuristicNoAng, ManhattanHeuristicNoAng
 from planning_python.data_structures.planning_problem import PlanningProblem

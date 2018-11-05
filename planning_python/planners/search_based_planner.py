@@ -14,7 +14,7 @@ class SearchBasedPlanner(object):
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
     self.curr_problem = problem 
     self.env        = problem.env
-    self.lattice    = problem.lattice
+    self.graph    = problem.graph
     self.cost       = problem.cost
     self.heuristic  = problem.heuristic
     self.visualize  = problem.visualize
@@ -23,11 +23,11 @@ class SearchBasedPlanner(object):
     self.heuristic_weight = problem.params['heuristic_weight']
 
     if self.visualize and self.env is not None:
-      self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))#, grid_res = [self.lattice.resolution[0], self.lattice.resolution[1]])
+      self.env.initialize_plot(self.graph.node_to_state(self.start_node), self.graph.node_to_state(self.goal_node))#, grid_res = [self.graph.resolution[0], self.graph.resolution[1]])
     self.initialized = True
 
   def get_successors(self, node):
-    """Given a node, query the lattice for successors, collision check the successors and return successor nodes, edges, costs, obstacle
+    """Given a node, query the graph for successors, collision check the successors and return successor nodes, edges, costs, obstacle
     successors
 
     @param:   node          - tuple corresponsing to a discrete node 
@@ -36,10 +36,10 @@ class SearchBasedPlanner(object):
               valid_edges   - list of collision free edges(continuous coords) coming out of the input node
               invalid_edges - a list of tuples where each tuple is of following form: (invalid edge, first invalid state along edge)
     """
-    if self.lattice.edge_precalc_done:
-      succs = self.lattice.node_to_succs[node]
+    if self.graph.edge_precalc_done:
+      succs = self.graph.node_to_succs[node]
     else:  
-      succs = self.lattice.get_successors(node)
+      succs = self.graph.get_successors(node)
     neighbors = []     #Discrete nodes that are valid neighbors of current node
     costs = []         #Cost associated with each of the neighbors
     valid_edges =[]    #Valid edges coming out of the node
@@ -57,8 +57,8 @@ class SearchBasedPlanner(object):
       valid_edges.append(succ_edge)
 
       #If precalculated costs available, use them else calculate them
-      if self.lattice.costs_precalc_done:
-        costs.append(self.lattice.succ_costs[node][i])
+      if self.graph.costs_precalc_done:
+        costs.append(self.graph.succ_costs[node][i])
       else:
         costs.append(self.cost.get_cost(succ_edge))
     #Visualize exansion if required
@@ -68,7 +68,7 @@ class SearchBasedPlanner(object):
     return neighbors, costs, valid_edges, invalid_edges
 
   def get_predecessors(self, node):
-    """Given a node, query the lattice for predecessors, collision check the predecessors and return predecessor nodes, edges, costs, obstacle
+    """Given a node, query the graph for predecessors, collision check the predecessors and return predecessor nodes, edges, costs, obstacle
     predecessors
 
     @param:   node          - tuple corresponsing to a discrete node 
@@ -77,10 +77,10 @@ class SearchBasedPlanner(object):
               valid_edges   - list of collision free edges(continuous coords) coming out of the input node
               invalid_edges - a list of tuples where each tuple is of following form: (invalid edge, first invalid state along edge)
     """
-    if self.lattice.edge_precalc_done:
-      preds = self.lattice.node_to_preds[node]
+    if self.graph.edge_precalc_done:
+      preds = self.graph.node_to_preds[node]
     else:  
-      preds = self.lattice.get_predecessors(node)
+      preds = self.graph.get_predecessors(node)
     
     neighbors = []     #Discrete nodes that are valid neighbors of current node
     costs = []         #Cost associated with each of the neighbors
@@ -98,8 +98,8 @@ class SearchBasedPlanner(object):
           continue
       neighbors.append(pred_node)
       valid_edges.append(pred_edge)
-      if self.lattice.costs_precalc_done:
-        costs.append(self.lattice.pred_costs[node][i])
+      if self.graph.costs_precalc_done:
+        costs.append(self.graph.pred_costs[node][i])
       else:
         costs.append(self.cost.get_cost(pred_edge))
     if self.visualize and self.env is not None:
@@ -116,7 +116,7 @@ class SearchBasedPlanner(object):
   
   def reconstruct_path(self, came_from, start_node, goal_node, cost_so_far):
     curr = goal_node
-    path = []#[tuple(self.lattice.node_to_state(goal_node))]
+    path = []#[tuple(self.graph.node_to_state(goal_node))]
     path_cost = cost_so_far[goal_node]
     
     while True:
@@ -138,8 +138,8 @@ class SearchBasedPlanner(object):
   def get_heuristic(self, node_1, node_2):
     if self.heuristic == None:
       return 0
-    s_1 = self.lattice.node_to_state(node_1)
-    s_2 = self.lattice.node_to_state(node_2)
+    s_1 = self.graph.node_to_state(node_1)
+    s_2 = self.graph.node_to_state(node_2)
     h_val = self.heuristic.get_heuristic(s_1, s_2)
     return h_val
     
@@ -158,7 +158,7 @@ class SearchBasedPlanner(object):
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
     self.curr_problem = problem
     self.env        = problem.env
-    self.lattice    = problem.lattice
+    self.graph    = problem.graph
     self.cost       = problem.cost
     self.heuristic  = problem.heuristic
     self.visualize  = problem.visualize
@@ -167,7 +167,7 @@ class SearchBasedPlanner(object):
     self.heuristic_weight = problem.params['heuristic_weight']
 
     if self.visualize and self.env is not None:
-      self.env.initialize_plot(self.lattice.node_to_state(self.start_node), self.lattice.node_to_state(self.goal_node))
+      self.env.initialize_plot(self.graph.node_to_state(self.start_node), self.graph.node_to_state(self.goal_node))
     self.initialized = True    
 
   def clear_planner(self):

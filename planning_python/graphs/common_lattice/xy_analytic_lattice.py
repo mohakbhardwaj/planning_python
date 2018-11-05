@@ -2,7 +2,7 @@
 import numpy as np
 from math import floor, cos, sin
 from sets import Set
-from planning_python.state_lattices.state_lattice import StateLattice
+from planning_python.graphs.state_lattice import StateLattice
 
 class XYAnalyticLattice(StateLattice):
   def __init__(self, params):

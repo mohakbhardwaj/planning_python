@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, "../..")
 import numpy as np
 import time
-from planning_python.state_lattices.common_lattice   import XYAnalyticLattice
+from planning_python.graphs.common_lattice   import XYAnalyticLattice
 
 #Step1: Set some problem parameters
 x_lims = [0, 201] # low(inclusive), upper(exclusive) extents of world in x-axis
