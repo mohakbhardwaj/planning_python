@@ -17,6 +17,7 @@ POLCIES:
 
 import sys
 sys.path.insert(0, "..")
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -30,7 +31,7 @@ from planning_python.utils import helpers
 import os
 
 
-NUM_POLICIES = 5 #We are going to evaluate all the naive policies defined in the paper
+NUM_POLICIES = 4 #We are going to evaluate all the naive policies defined in the paper
 x_lims = [0, 200] # low(inclusive), upper(exclusive) extents of world in x-axis
 y_lims = [0, 200] # low(inclusive), upper(exclusive) extents of world in y-axis
 
@@ -47,10 +48,11 @@ base_planner = Astar()
 start_n = lattice.state_to_node((0,0))
 goal_n = lattice.state_to_node((199, 199))
 visualize = False
+suppress_output = True
 
 
 def run_benchmark(database_folders=[], num_envs=1):
-  global env_params, lattice_params, prob_params, true_cost_fn, heuristic_fn, lazy_cost_fn, lattice, planner, base_planner, start_n, goal_n, NUM_POLICIES, visualize
+  global env_params, lattice_params, prob_params, true_cost_fn, heuristic_fn, lazy_cost_fn, lattice, planner, base_planner, start_n, goal_n, NUM_POLICIES, visualize, suppress_output
   # lattice.precalc_costs(cost_fn)
   from collections import defaultdict
   e = Env2D()
@@ -61,16 +63,21 @@ def run_benchmark(database_folders=[], num_envs=1):
     
     for i in range(num_envs):
       curr_env_file = os.path.join(os.path.abspath(folder), str(i)+'.png')
-      print('Curr env number %d'%i)
+      print('Curr env number = %d'%i)
       e.initialize(curr_env_file, env_params)
     
       for policy in range(NUM_POLICIES):
-        print('Curr policy number %d', policy) 
+        print('Curr policy number = %d'%policy) 
         prob = PlanningProblem(prob_params)
         prob.initialize(e, lattice, true_cost_fn, heuristic_fn, start_n, goal_n, visualize=visualize)
         prob.set_lazy_cost(lazy_cost_fn)
-        planner.initialize(prob, base_planner, policy=1) 
-        path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=True)
+        planner.initialize(prob, base_planner, policy=policy)
+        print('Calling LSP planner') 
+        if suppress_output:
+          with helpers.nostdout():
+            path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=True)
+        else:
+          path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=True)
         results[policy].append((path_cost, num_edge_evals, num_iters, num_base_calls, plan_time))
         print('Path: ', path)
         print('Path cost: ', path_cost)
@@ -84,8 +91,8 @@ def run_benchmark(database_folders=[], num_envs=1):
     output_file_1 = "lsp_2d_benchmark.json" 
     result_folder = os.path.abspath("../benchmark_results/lsp/"+env_name)
     if not os.path.exists(result_folder):
-      os.makedirs(results_folder)
-    json.dump(results, open(os.path.join(os.path.abspath("../benchmark_results/lsp/"+env_name), output_file_1), 'w'), sort_keys=True)
+      os.makedirs(result_folder)
+    json.dump(results, open(os.path.join(result_folder, output_file_1), 'w'), sort_keys=True)
     # output_file_2 = "lsp_2d_benchmark_averaged.json"
     
     # #Calculate average expansions

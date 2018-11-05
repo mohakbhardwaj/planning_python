@@ -131,7 +131,7 @@ class LSPPlanner(object):
 
   def reset(self):
     self.iter = 0
-    self.e_eval.clear()
+    self.lazy_cost.e_eval.clear()
     self.reset_base_planner()
 
 
@@ -161,7 +161,7 @@ class LSPPlanner(object):
 
   def select_backward(self, path):
     e_selected = []
-    for edge in reveresed(path):
+    for edge in reversed(path):
       if edge not in self.lazy_cost.e_eval:
         e_selected = [edge]
         break
