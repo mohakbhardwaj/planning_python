@@ -11,8 +11,6 @@ POLCIES:
 1 - SelectForward
 2 - SelectReverse
 3 - SelectAlternate
-4 - SelectBisection 
-
 """
 
 import sys
