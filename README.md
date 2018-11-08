@@ -13,6 +13,10 @@ The search based planning pipeline looks as follows:
 1. [Numpy](http://www.numpy.org/)
 2. [Matplotlib](https://matplotlib.org/)
 3. [dubins](https://pypi.python.org/pypi/dubins/)
+4. [NetworkX](https://networkx.github.io/)
+5. [Motion Planning Datasets](https://github.com/mohakbhardwaj/motion_planning_datasets)
+
+Create a workspace with motion_planning_datasets and planning_python folders in it to run the examples.
 
 
 ## Installation
