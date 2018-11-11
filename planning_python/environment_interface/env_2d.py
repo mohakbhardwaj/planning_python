@@ -7,6 +7,7 @@ Inputs : file_name, x y resolution (meters to pixel conversion)
 Outputs:  - 2d occupancy grid of the environment
           - ability to check states in collision
 """
+import networkx as nx
 import numpy as np
 import math
 from time import sleep
@@ -216,6 +217,13 @@ class Env2D():
   def plot_path(self, path, linestyle='solid', color='blue', linewidth=2):
     flat_path = [item for sublist in path for item in sublist]
     self.plot_edge(flat_path, linestyle, color, linewidth)
+
+  def plot_graph(self, G, pos, width=1.0, edge_color='r', style='solid', alpha=1.0, cmap=None,arrows=True, label=None, node_size=300, node_color='r', node_shape='o', linewidths=None):
+    self.figure.canvas.restore_region(self.background)
+    nx.draw_networkx_edges(G, pos, width = width, edge_color=edge_color, style=style, alpha = alpha, ax=self.axes, cmap = cmap, arrows = arrows, label=label)
+    nx.draw_networkx_nodes(G, pos, ax=self.axes, node_size=node_size, node_color=node_color, node_shape=node_shape, alpha=alpha, cmap=cmap, linewidths=linewidths)
+    self.figure.canvas.blit(self.axes.bbox)
+    self.background = self.figure.canvas.copy_from_bbox(self.axes.bbox) 
 
   def close_plot(self):
     if self.plot_initialized:

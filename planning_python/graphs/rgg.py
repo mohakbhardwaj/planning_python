@@ -12,10 +12,13 @@ class RGG():
     if 'pos' in params:
       self.pos    = params['pos']
     self.lower_limits = np.array(params['lower_limits'])
-    self.upper_limts = np.array(params['upper_limits'])
+    self.upper_limits = np.array(params['upper_limits'])
     self.path_resolution = params['path_resolution']
     self.graph = nx.generators.geometric.random_geometric_graph(self.nnodes, self.r, self.ndims, pos=self.pos, p=2, seed=None)#, self.pos)
+    self.graph = self.graph.to_directed()
     self.populate_edges()
+    self.edge_precalc_done=False
+    self.costs_precalc_done=False
 
 
   def get_successors(self, node):
@@ -30,18 +33,28 @@ class RGG():
     return succs
 
   def node_to_state(self, node):
-    node = np.array(node)
-    state = np.multiply(node, self.upper_limits - self.lower_limits)
-    return state
+    state = self.graph.node[node]['pos']
+    return np.asarray(state)
+  
+  def state_to_node(self, state):
+    #returns closest node in terms of L2 in O(N)
+    state = np.asarray(state)
+    min_d = np.inf
+    closest_node = None
+    for node in self.graph:
+      s_n = self.graph.node[node]['pos']
+      d = np.linalg.norm(s_n - state)
+      if d < min_d:
+        min_d = d
+        closest_node = node
+    return node
 
   def populate_edges(self):
     for node in self.graph:
-      adj_n = self.graph[node]
       s1 = self.graph.node[node]['pos']
-      for nbr in adj_n:
+      for nbr in self.graph[node]:
         s2 = self.graph.node[nbr]['pos']
         self.graph[node][nbr]['interp_edge'] = self.interpolate(s1, s2, self.distance_bw_states(s1, s2)/self.path_resolution)
-        print self.graph[node][nbr]['interp_edge']
 
   def interpolate(self, s1, s2, num_points):
     """Returns a sequence of states between two states 
@@ -75,9 +88,9 @@ class RGG():
   def  distance_bw_states(self, s1, s2):
     return np.linalg.norm(np.asarray(s1) - np.asarray(s2))
   
-  def visualize_graph(self, ax):
-    nx.draw_networkx_edges(self.graph, pos, ax=ax)
-    nx.draw_networkx_nodes(self.graph, pos, node_size=70, ax=ax)
+  def visualize_graph(self, ax, width=1.0, edge_color='r', style='solid', alpha=1.0, cmap=None, arrows=True, label=None, node_size=300, node_color='r', node_shape='o', linewidths=None):
+    nx.draw_networkx_edges(self.graph, pos, width = width, edge_color=edge_color, style=style, alpha = alpha, ax=ax, cmap = cmap, arrows = arrows, label=label)
+    nx.draw_networkx_nodes(self.graph, pos, ax=ax, node_size=node_size, node_color=node_color, node_shape=node_shape, alpha=alpha, cmap=cmap, linewidths=linewidths)
 
 
 
@@ -99,8 +112,12 @@ if __name__=="__main__":
   params['path_resolution'] = 10
 
   rgg = RGG(params)
-  for i in range(n):
-    print i, rgg.graph.node[i]['pos'], rgg.get_successors(i)
+  for node in rgg.graph:
+    # print i, rgg.graph.node[i]['pos'], rgg.get_successors(i)
+    print node, rgg.graph.node[node]['pos']
+    for nbr in rgg.graph[node]: 
+      print rgg.graph[node][nbr]['interp_edge']
+      # print rgg.graph[nbr][node]['interp_edge']
   fig, ax = plt.subplots(1,1)
-  rgg.visualize_graph(ax)
+  rgg.visualize_graph(ax, arrows=False, node_size=70, edge_color='k')
   plt.show()
