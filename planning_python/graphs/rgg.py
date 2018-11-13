@@ -47,7 +47,7 @@ class RGG():
       if d < min_d:
         min_d = d
         closest_node = node
-    return node
+    return closest_node
 
   def populate_edges(self):
     for node in self.graph:

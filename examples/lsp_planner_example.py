@@ -33,7 +33,7 @@ x_lims = [0, 201]    # low(inclusive), upper(exclusive) extents of world in x-ax
 y_lims = [0, 201]    # low(inclusive), upper(exclusive) extents of world in y-axis
 start  = (10, 10)    #start state(world coordinates)
 goal   = (199, 199)  #goal state(world coordinates)
-visualize = False
+visualize = True
 suppress_output = False
 
 #Step 2: Load environment from file 
@@ -43,7 +43,7 @@ e = Env2D()
 e.initialize(envfile, env_params)
 
 #Step 3: Create a random geometric graph with uniformly distributed nodes
-nnodes = 200
+nnodes = 150
 radius = 50.0
 pos = {0: start, 1:goal } #Pos defines the position of the nodes in the graph. we first add the start and the goal
 for i in xrange(2, nnodes): pos[i] = (np.random.uniform(x_lims[0], x_lims[1]), np.random.uniform(y_lims[0], y_lims[1]))
@@ -54,7 +54,7 @@ graph_params['upper_limits']  = [x_lims[1], y_lims[1]]
 graph_params['ndims']         = 2       
 graph_params['nnodes']        = nnodes        
 graph_params['radius']        = radius     
-graph_params['path_resolution'] = 1         
+graph_params['path_resolution'] = 0.5         
 graph_params['pos'] = pos
 
 g = RGG(graph_params)
@@ -75,7 +75,7 @@ prob.set_lazy_cost(lazy_cost_fn)
 #Step 6: Create Planner object and ask it to solve the planning problem
 planner = LSPPlanner()
 base_planner = Astar()
-planner.initialize(prob, base_planner, policy=1)
+planner.initialize(prob, base_planner, policy=0)
 
 if suppress_output:
   with helpers.nostdout():
@@ -83,14 +83,14 @@ if suppress_output:
 else:
 	path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=False)
 
-print('Path: ', path)
-print('Path cost: ', path_cost)
-print('Num edge evaluations: ', num_edge_evals)
-print('Time taken: ', plan_time)
-print('Num planning iterations', num_iters)
-print('Num base planner calls', num_base_calls)
+# print('Path: ', path)
+# print('Path cost: ', path_cost)
+# print('Num edge evaluations: ', num_edge_evals)
+# print('Time taken: ', plan_time)
+# print('Num planning iterations', num_iters)
+# print('Num base planner calls', num_base_calls)
 
 e.initialize_plot(start, goal, grid_res=1, plot_grid=False)
-e.plot_path(path, 'solid', 'red', 3)
-e.plot_graph(g.graph, pos, arrows=False, node_size=10, edge_color='k')
+e.plot_path(path, 'solid', 'b', 3)
+e.plot_graph(g.graph, pos, arrows=False, node_size=10, edge_color='m')
 plt.show()

@@ -73,6 +73,7 @@ class LSPPlanner(object):
       if self.visualize and self.env is not None:
         self.env.plot_path(cand_path, 'solid', 'red', 1)
         [self.env.plot_edge(e, 'solid', 'green', 2) for e in e_selected]
+        # self.env.plot_graph(self.graph.graph, self.graph.pos, arrows=False, node_size=10, edge_color='g')
       self.iter += 1
 
     plan_time = time.time() - start_time
@@ -141,12 +142,13 @@ class LSPPlanner(object):
     for edge in path:
       if edge not in self.lazy_cost.e_eval:
         #Look-up successor edges for first node in edge
-        node = self.graph.state_to_node(edge[0])      
+        node = self.graph.state_to_node(edge[0])
+        # print "Here", edge[0], node      
         if self.graph.edge_precalc_done:
           succs = self.graph.node_to_succs[node]
         else:  
           succs = self.graph.get_successors(node)
-        for i,e in enumerate(succs):
+        for e in succs:
           e_selected.append(e[1])
         break
     return e_selected
