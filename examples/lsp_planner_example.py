@@ -75,7 +75,7 @@ prob.set_lazy_cost(lazy_cost_fn)
 #Step 6: Create Planner object and ask it to solve the planning problem
 planner = LSPPlanner()
 base_planner = Astar()
-planner.initialize(prob, base_planner, policy=1)
+planner.initialize(prob, base_planner, policy=3)
 
 if suppress_output:
   with helpers.nostdout():
