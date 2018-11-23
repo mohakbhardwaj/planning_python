@@ -83,12 +83,12 @@ if suppress_output:
 else:
 	path, path_cost, num_edge_evals, plan_time, num_iters, num_base_calls = planner.plan(max_iters=np.inf, suppress_base_output=False)
 
-# print('Path: ', path)
-# print('Path cost: ', path_cost)
-# print('Num edge evaluations: ', num_edge_evals)
-# print('Time taken: ', plan_time)
-# print('Num planning iterations', num_iters)
-# print('Num base planner calls', num_base_calls)
+print('Path: ', path)
+print('Path cost: ', path_cost)
+print('Num edge evaluations: ', num_edge_evals)
+print('Time taken: ', plan_time)
+print('Num planning iterations', num_iters)
+print('Num base planner calls', num_base_calls)
 
 e.initialize_plot(start, goal, grid_res=1, plot_grid=False)
 e.plot_path(path, 'solid', 'b', 3)

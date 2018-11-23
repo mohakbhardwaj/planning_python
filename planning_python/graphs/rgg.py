@@ -93,7 +93,6 @@ class RGG():
     nx.draw_networkx_nodes(self.graph, pos, ax=ax, node_size=node_size, node_color=node_color, node_shape=node_shape, alpha=alpha, cmap=cmap, linewidths=linewidths)
 
 
-
 if __name__=="__main__":
   import matplotlib.pyplot as plt
   import random

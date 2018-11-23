@@ -15,7 +15,7 @@ class LSPPlanner(object):
     assert problem.initialized == True, "Planning problem data structure has not been initialized"
     self.problem    = problem 
     self.env        = problem.env
-    self.graph    = problem.graph
+    self.graph      = problem.graph
     self.true_cost  = problem.cost
     self.lazy_cost  = problem.lazy_cost
     self.heuristic  = problem.heuristic
